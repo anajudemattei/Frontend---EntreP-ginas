@@ -157,7 +157,6 @@ export default function PerfilPage() {
 
           <div className={styles.grid}>
             <div className={styles.mainColumn}>
-              {/* Informações básicas */}
               <Card className={styles.card}>
                 <div className={styles.cardHeader}>
                   <h2 className={styles.cardTitle}>Informações Básicas</h2>
