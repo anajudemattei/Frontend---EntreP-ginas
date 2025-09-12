@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Cores primárias do Entre Páginas - Nova Paleta */
+  --primary: #F8BBD9; /* Rosa pastel */
+  --primary-light: #FDD2E7;
+  --primary-dark: #E89CC6;
+  
+  /* Cores secundárias */
+  --secondary: #FFF2CC; /* Amarelo pastel */
+  --secondary-light: #FFF8E1;
+  --secondary-dark: #F5E6A3;
+  
+  /* Cores neutras */
+  --background: #F8BBD9; /* Rosa pastel como fundo principal */
+  --background-alt: #FDD2E7; /* Rosa mais claro para variações */
+  --foreground: #2D1B2E; /* Texto escuro para contraste */
+  --muted: #5A3A5C; /* Cinza escuro com toque de rosa */
+  
+  /* Cores de estado */
+  --success: #B8E6B8;
+  --warning: #FFE066;
+  --error: #FFB3BA;
+  --info: #B3D9FF;
+  
+  /* Sombras */
+  --shadow: rgba(248, 187, 217, 0.15);
+  --shadow-lg: rgba(248, 187, 217, 0.25);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1A1A1A;
+    --background-alt: #2A2A2A;
+    --foreground: #E5E5E5;
+    --muted: #B0B0B0;
+    --shadow: rgba(248, 187, 217, 0.1);
+    --shadow-lg: rgba(248, 187, 217, 0.2);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estilos globais para o tema do diário */
+.page-container {
+  min-height: 100vh;
+  background: var(--background);
+  position: relative;
+}
+
+/* Watermark da logo */
+.page-container::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F5E6D8' opacity='0.03'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(45, 27, 46, 0.15);
+  border: 1px solid rgba(45, 27, 46, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.btn-primary {
+  background: var(--color-yellow-200); /* Mesmo tom da header */
+  color: var(--color-gray-700); /* Mesmo tom da header */
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: var(--color-yellow-300); /* Mesmo hover da header */
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(255, 242, 204, 0.4);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--secondary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Utilitários para textos truncados */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilo para checkboxes */
+input[type="checkbox"] {
+  accent-color: var(--primary);
+}
+
+/* Focus states melhorados */
+.focus-visible:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
