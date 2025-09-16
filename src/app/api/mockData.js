@@ -1,4 +1,3 @@
-// Mock database para desenvolvimento
 let mockEntries = [
   {
     id: 1,
@@ -183,5 +182,112 @@ export const mockData = {
       moodDistribution,
       monthlyActivity
     };
+  }
+};
+
+// API mock que simula as rotas do backend
+export const mockAPI = {
+  // GET /diary-entries
+  getDiaryEntries: (filters = {}) => {
+    let entries = [...mockEntries];
+    
+    // Aplicar filtros
+    if (filters.mood) {
+      entries = entries.filter(entry => entry.mood === filters.mood);
+    }
+    
+    if (filters.tag) {
+      entries = entries.filter(entry => 
+        entry.tags && entry.tags.some(tag => 
+          tag.toLowerCase().includes(filters.tag.toLowerCase())
+        )
+      );
+    }
+    
+    if (filters.startDate) {
+      entries = entries.filter(entry => 
+        new Date(entry.entry_date) >= new Date(filters.startDate)
+      );
+    }
+    
+    if (filters.endDate) {
+      entries = entries.filter(entry => 
+        new Date(entry.entry_date) <= new Date(filters.endDate)
+      );
+    }
+    
+    // Ordenar por data (mais recente primeiro)
+    entries.sort((a, b) => new Date(b.entry_date) - new Date(a.entry_date));
+    
+    // Aplicar limite
+    if (filters.limit) {
+      entries = entries.slice(0, parseInt(filters.limit));
+    }
+    
+    return Promise.resolve(entries);
+  },
+
+  // GET /diary-entries/:id
+  getDiaryEntry: (id) => {
+    const entry = mockData.getEntry(id);
+    if (entry) {
+      return Promise.resolve(entry);
+    } else {
+      return Promise.reject(new Error('Entry not found'));
+    }
+  },
+
+  // POST /diary-entries
+  createDiaryEntry: (data) => {
+    const newEntry = mockData.addEntry(data);
+    return Promise.resolve(newEntry);
+  },
+
+  // PUT /diary-entries/:id
+  updateDiaryEntry: (id, data) => {
+    const updatedEntry = mockData.updateEntry(id, data);
+    if (updatedEntry) {
+      return Promise.resolve(updatedEntry);
+    } else {
+      return Promise.reject(new Error('Entry not found'));
+    }
+  },
+
+  // DELETE /diary-entries/:id
+  deleteDiaryEntry: (id) => {
+    const deletedEntry = mockData.deleteEntry(id);
+    if (deletedEntry) {
+      return Promise.resolve({ message: 'Entry deleted successfully' });
+    } else {
+      return Promise.reject(new Error('Entry not found'));
+    }
+  },
+
+  // GET /diary-entries/mood/:mood
+  getDiaryEntriesByMood: (mood) => {
+    const entries = mockEntries.filter(entry => entry.mood === mood);
+    return Promise.resolve(entries);
+  },
+
+  // GET /diary-entries/favorites
+  getFavoriteDiaryEntries: () => {
+    const favorites = mockEntries.filter(entry => entry.is_favorite);
+    return Promise.resolve(favorites);
+  },
+
+  // PATCH /diary-entries/:id/favorite
+  toggleFavorite: (id) => {
+    const updatedEntry = mockData.toggleFavorite(id);
+    if (updatedEntry) {
+      return Promise.resolve(updatedEntry);
+    } else {
+      return Promise.reject(new Error('Entry not found'));
+    }
+  },
+
+  // GET /diary-entries/stats
+  getDiaryStats: () => {
+    const stats = mockData.getStats();
+    return Promise.resolve(stats);
   }
 };

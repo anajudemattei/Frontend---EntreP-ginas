@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import { Card, Button, Badge, LoadingSpinner, Input, Select } from '../../components/ui';
-import Image from 'next/image';
 import Link from 'next/link';
 import apiService from '../../services/api';
 import styles from './entradas.module.css';
@@ -175,7 +174,7 @@ export default function EntradasPage() {
             </Select>
           </div>
           <div className={styles.filtersActions}>
-            <Button variant="ghost" size="sm" onClick={clearFilters}>
+            <Button size="sm" onClick={clearFilters}>
               Limpar filtros
             </Button>
           </div>
@@ -203,15 +202,6 @@ export default function EntradasPage() {
           </Card>
         ) : entries.length === 0 ? (
           <Card className={styles.emptyCard}>
-            <div className={styles.emptyLogo}>
-              <Image 
-                src="/logo.png" 
-                alt="Entre Páginas" 
-                width={150} 
-                height={48}
-                className="h-12 w-auto rounded-lg"
-              />
-            </div>
             <div className={styles.emptyIcon}>📖</div>
             <h3 className={styles.emptyTitle}>
               Nenhuma entrada encontrada
@@ -276,18 +266,17 @@ export default function EntradasPage() {
                 <div className={styles.entryActions}>
                   <div className={styles.entryActionsLeft}>
                     <Link href={`/entradas/${entry.id}`}>
-                      <Button variant="ghost" size="sm">
+                      <Button size="sm">
                         Ver
                       </Button>
                     </Link>
                     <Link href={`/entradas/${entry.id}/editar`}>
-                      <Button variant="ghost" size="sm">
+                      <Button size="sm">
                         Editar
                       </Button>
                     </Link>
                   </div>
                   <Button 
-                    variant="ghost" 
                     size="sm" 
                     className={styles.deleteButton}
                     onClick={() => handleDelete(entry.id)}

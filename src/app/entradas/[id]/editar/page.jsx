@@ -276,7 +276,6 @@ export default function EditarEntradaPage({ params }) {
             <div className="flex justify-between items-center pt-6 border-t border-primary/10">
               <Button
                 type="button"
-                variant="ghost"
                 onClick={() => router.push(`/entradas/${params.id}`)}
                 disabled={saving}
               >

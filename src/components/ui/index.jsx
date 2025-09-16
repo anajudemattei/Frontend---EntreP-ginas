@@ -13,24 +13,57 @@ export function Button({
   className = '', 
   ...props 
 }) {
-  const baseClasses = 'font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
-  
+  const baseStyles = {
+    fontWeight: '500',
+    borderRadius: '8px',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer',
+    border: 'none',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem'
+  };
+
   const variants = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    outline: 'border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white',
-    ghost: 'text-primary bg-transparent hover:bg-primary/10',
+    primary: {
+      backgroundColor: 'var(--secondary)',
+      color: 'var(--foreground)',
+      border: 'none'
+    },
+    secondary: {
+      backgroundColor: 'var(--primary)',
+      color: 'white',
+      border: 'none'
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      color: 'var(--primary)',
+      border: '2px solid var(--primary)'
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+      color: 'var(--primary)',
+      border: 'none'
+    }
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-6 py-3 text-lg',
+    sm: { padding: '0.375rem 0.75rem', fontSize: '0.875rem' },
+    md: { padding: '0.5rem 1rem', fontSize: '1rem' },
+    lg: { padding: '0.75rem 1.5rem', fontSize: '1.125rem' }
+  };
+
+  const buttonStyle = {
+    ...baseStyles,
+    ...variants[variant],
+    ...sizes[size]
   };
 
   return (
     <button 
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      style={buttonStyle}
+      className={`btn-ui-${variant} ${className}`}
       {...props}
     >
       {children}
@@ -45,18 +78,36 @@ export function Input({
   ...props 
 }) {
   return (
-    <div className="space-y-1">
+    <div style={{ marginBottom: '0.25rem' }}>
       {label && (
-        <label className="block text-sm font-medium text-foreground">
+        <label style={{
+          display: 'block',
+          fontSize: '0.875rem',
+          fontWeight: '500',
+          color: 'var(--foreground)',
+          marginBottom: '0.5rem'
+        }}>
           {label}
         </label>
       )}
       <input
-        className={`w-full px-3 py-2 border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors ${error ? 'border-error' : ''} ${className}`}
+        style={{
+          width: '100%',
+          padding: '0.75rem',
+          border: '1px solid rgba(248, 187, 217, 0.3)',
+          borderRadius: '8px',
+          fontSize: '1rem',
+          transition: 'all 0.2s ease',
+          boxSizing: 'border-box',
+          backgroundColor: 'white'
+        }}
+        className={`focus:border-primary focus:ring-2 focus:ring-primary/20 ${className}`}
         {...props}
       />
       {error && (
-        <p className="text-error text-sm">{error}</p>
+        <p style={{ color: 'var(--error)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+          {error}
+        </p>
       )}
     </div>
   );
@@ -94,20 +145,39 @@ export function Select({
   ...props 
 }) {
   return (
-    <div className="space-y-1">
+    <div style={{ marginBottom: '0.25rem' }}>
       {label && (
-        <label className="block text-sm font-medium text-foreground">
+        <label style={{
+          display: 'block',
+          fontSize: '0.875rem',
+          fontWeight: '500',
+          color: 'var(--foreground)',
+          marginBottom: '0.5rem'
+        }}>
           {label}
         </label>
       )}
       <select
-        className={`w-full px-3 py-2 border border-primary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors ${error ? 'border-error' : ''} ${className}`}
+        style={{
+          width: '100%',
+          padding: '0.75rem',
+          border: '1px solid rgba(248, 187, 217, 0.3)',
+          borderRadius: '8px',
+          fontSize: '1rem',
+          transition: 'all 0.2s ease',
+          boxSizing: 'border-box',
+          backgroundColor: 'white',
+          cursor: 'pointer'
+        }}
+        className={`focus:border-primary focus:ring-2 focus:ring-primary/20 ${className}`}
         {...props}
       >
         {children}
       </select>
       {error && (
-        <p className="text-error text-sm">{error}</p>
+        <p style={{ color: 'var(--error)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+          {error}
+        </p>
       )}
     </div>
   );

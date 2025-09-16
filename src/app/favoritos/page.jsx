@@ -156,12 +156,12 @@ export default function FavoritosPage() {
                 <div className={styles.favoriteActions}>
                   <div className={styles.favoriteActionsLeft}>
                     <Link href={`/entradas/${entry.id}`}>
-                      <Button variant="ghost" size="sm">
+                      <Button size="sm">
                         Ver
                       </Button>
                     </Link>
                     <Link href={`/entradas/${entry.id}/editar`}>
-                      <Button variant="ghost" size="sm">
+                      <Button size="sm">
                         Editar
                       </Button>
                     </Link>

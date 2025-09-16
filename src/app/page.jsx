@@ -161,7 +161,6 @@ export default function HomePage() {
             <div className={styles.errorCard}>
               <p className={styles.errorText}>{error}</p>
               <Button 
-                variant="outline" 
                 size="sm" 
                 className="mt-2"
                 onClick={loadDashboardData}
@@ -269,7 +268,7 @@ export default function HomePage() {
 
               <div className="mt-4 text-center">
                 <Link href="/entradas">
-                  <Button variant="outline">
+                  <Button>
                     Ver todas as entradas
                   </Button>
                 </Link>

@@ -91,7 +91,7 @@ export default function NovaEntradaPage() {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-20">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
             Nova Entrada
@@ -213,7 +213,6 @@ export default function NovaEntradaPage() {
             <div className="flex justify-between items-center pt-6 border-t border-primary/10">
               <Button
                 type="button"
-                variant="ghost"
                 onClick={() => router.push('/entradas')}
                 disabled={loading}
               >

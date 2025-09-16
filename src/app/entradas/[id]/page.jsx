@@ -128,7 +128,7 @@ export default function EntradaPage({ params }) {
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <Link href="/entradas">
-                <Button variant="ghost" size="sm">
+                <Button size="sm">
                   ← Voltar
                 </Button>
               </Link>
@@ -211,12 +211,11 @@ export default function EntradaPage({ params }) {
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
             <Link href={`/entradas/${entry.id}/editar`}>
-              <Button variant="outline">
+              <Button>
                 ✏️ Editar
               </Button>
             </Link>
             <Button 
-              variant="ghost" 
               className="text-error hover:bg-error/10"
               onClick={handleDelete}
             >
@@ -226,7 +225,6 @@ export default function EntradaPage({ params }) {
           
           <div className="flex space-x-2">
             <Button
-              variant="outline"
               onClick={handleToggleFavorite}
             >
               {entry.is_favorite ? '☆ Remover dos favoritos' : '⭐ Adicionar aos favoritos'}

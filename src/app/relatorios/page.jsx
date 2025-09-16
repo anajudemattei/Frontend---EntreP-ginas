@@ -133,7 +133,7 @@ export default function RelatoriosPage() {
               <option value="true">Apenas favoritos</option>
             </Select>
           </div>
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
+          <Button size="sm" onClick={clearFilters}>
             Limpar filtros
           </Button>
         </Card>

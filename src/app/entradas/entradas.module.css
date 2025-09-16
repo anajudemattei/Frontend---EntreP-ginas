@@ -79,7 +79,6 @@
   margin-bottom: 3rem;
 }
 
-/* Separador */
 .separator {
   display: flex;
   align-items: center;
@@ -114,22 +113,51 @@
   gap: 0.5rem;
 }
 
+.filtersCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(45, 27, 46, 0.15);
+  border: 1px solid rgba(248, 187, 217, 0.2);
+  margin-bottom: 2rem;
+}
+
+.filtersTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .filtersGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 @media (min-width: 640px) {
   .filtersGrid {
     grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .filtersGrid {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1.5rem;
   }
+}
+
+.filtersActions {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(248, 187, 217, 0.2);
+  display: flex;
+  justify-content: flex-end;
 }
 
 .filterGroup {
@@ -394,8 +422,8 @@
 }
 
 .paginationButtonActive {
-  background-color: var(--color-yellow-200); /* Mesmo tom da header */
-  color: var(--color-gray-700); /* Mesmo tom da header */
+  background-color: var(--color-yellow-200);
+  color: var(--color-gray-700);
   border-color: var(--color-yellow-200);
 }
 
