@@ -1,5 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'your-api-key-here';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api';
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'entre-linhas-2024';
 
 import { mockAPI } from '../app/api/mockData.js';
 
@@ -19,14 +19,17 @@ class ApiService {
       throw new Error('Using mock data');
     }
 
-    const url = `${this.baseURL}${endpoint}`;
+    // Adicionar API_KEY como query parameter
+    const url = new URL(`${this.baseURL}${endpoint}`);
+    url.searchParams.append('API_KEY', API_KEY);
+    
     const config = {
       headers: this.headers,
       ...options,
     };
 
     try {
-      const response = await fetch(url, config);
+      const response = await fetch(url.toString(), config);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -86,13 +89,26 @@ class ApiService {
 
   async createDiaryEntryWithPhoto(formData) {
     try {
-      return await this.request('/diary-entries', {
+      // Se já estamos usando mock data, pule para o mock
+      if (this.useMockData) {
+        throw new Error('Using mock data');
+      }
+
+      // Adicionar API_KEY como query parameter
+      const url = new URL(`${this.baseURL}/diary-entries`);
+      url.searchParams.append('API_KEY', API_KEY);
+      
+      const response = await fetch(url.toString(), {
         method: 'POST',
-        headers: {
-          'x-api-key': API_KEY, // Only API key, no Content-Type for FormData
-        },
         body: formData,
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
     } catch (error) {
       console.log('Usando dados simulados para criar entrada com foto...');
       // Converte FormData para objeto para mock
@@ -175,16 +191,15 @@ class ApiService {
       }
     });
 
-    const queryString = queryParams.toString();
-    const endpoint = `/report/pdf${queryString ? `?${queryString}` : ''}`;
+    // Adicionar API_KEY
+    queryParams.append('API_KEY', API_KEY);
     
-    const url = `${this.baseURL}${endpoint}`;
+    const url = new URL(`${this.baseURL}/report/pdf`);
+    url.search = queryParams.toString();
     
     try {
-      const response = await fetch(url, {
-        headers: {
-          'x-api-key': API_KEY,
-        },
+      const response = await fetch(url.toString(), {
+        headers: this.headers,
       });
 
       if (!response.ok) {
@@ -197,7 +212,18 @@ class ApiService {
       throw error;
     }
   }
+
+  // Estatísticas
+  async getStats() {
+    try {
+      return await this.request('/stats');
+    } catch (error) {
+      console.log('Usando dados simulados para estatísticas...');
+      return mockAPI.getStats();
+    }
+  }
 }
 
 const apiService = new ApiService();
 export default apiService;
+export { apiService };

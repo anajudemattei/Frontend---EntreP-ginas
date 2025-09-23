@@ -5,7 +5,6 @@ import Layout from '../components/Layout';
 import { Card, Button, Badge, LoadingSpinner } from '../components/ui';
 import Image from 'next/image';
 import Link from 'next/link';
-import apiService from '../services/api';
 import styles from './dashboard.module.css';
 
 export default function HomePage() {
@@ -14,83 +13,81 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
+  const API_URL = 'http://localhost:3002/api';
+  const API_KEY = 'entre-linhas-2024';
 
-  const loadDashboardData = async () => {
-    try {
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
-      
-      const timeout = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('API timeout')), 2000)
-      );
-      
-      const [statsResponse, entriesResponse] = await Promise.race([
-        Promise.all([
-          apiService.getDiaryStats(),
-          apiService.getDiaryEntries({ limit: 3 })
-        ]),
-        timeout
-      ]);
 
-      setStats(statsResponse.data);
-      setRecentEntries(entriesResponse.data || []);
-    } catch (err) {
-      console.error('Erro ao carregar dados do dashboard:', err);
-      
-      setStats({
-        totalEntries: 12,
-        totalFavorites: 4,
-        currentStreak: 7,
-        totalWords: 2847,
-        moodDistribution: [
-          { mood: 'feliz', count: 5 },
-          { mood: 'tranquilo', count: 3 },
-          { mood: 'contemplativo', count: 2 },
-          { mood: 'animado', count: 2 }
-        ],
-        monthlyActivity: [
-          { month: 'Dezembro', entries: 12 }
-        ]
-      });
-      
-      setRecentEntries([
-        {
-          id: 1,
-          title: "Meu primeiro dia no novo projeto",
-          content: "Hoje comecei a trabalhar no projeto Entre Páginas. Estou muito animada com as possibilidades...",
-          mood: "feliz",
-          entry_date: "2024-12-15T10:30:00Z",
-          is_favorite: true,
-          tags: ['trabalho', 'projetos', 'animação']
-        },
-        {
-          id: 2,
-          title: "Reflexões sobre o fim de semana",
-          content: "O fim de semana foi relaxante. Passei tempo lendo e escrevendo. Preciso fazer isso mais vezes...",
-          mood: "tranquilo",
-          entry_date: "2024-12-14T14:15:00Z",
-          is_favorite: false,
-          tags: ['relaxamento', 'leitura']
-        },
-        {
-          id: 3,
-          title: "Pensamentos aleatórios",
-          content: "Às vezes é bom apenas escrever sem pensar muito. Deixar os pensamentos fluírem naturalmente...",
-          mood: "contemplativo",
-          entry_date: "2024-12-13T20:45:00Z",
-          is_favorite: true,
-          tags: ['reflexão', 'escrita']
+      try {
+        // Buscar entradas recentes
+        const entriesUrl = `${API_URL}/diary-entries?API_KEY=${API_KEY}`;
+        console.log('Fazendo requisição para:', entriesUrl);
+        
+        const entriesResponse = await fetch(entriesUrl, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          }
+        });
+
+        console.log('Status da resposta:', entriesResponse.status);
+        
+        if (!entriesResponse.ok) {
+          // Tentar formato alternativo se o primeiro falhar
+          console.log('Tentando formato alternativo...');
+          const alternativeResponse = await fetch(`${API_URL}/diary-entries`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'API-KEY': API_KEY
+            }
+          });
+          
+          if (!alternativeResponse.ok) {
+            throw new Error(`Erro ao buscar entradas: ${entriesResponse.status} - ${alternativeResponse.status}`);
+          }
+          
+          const entriesData = await alternativeResponse.json();
+          console.log('Resposta da API (alternativa):', entriesData);
+          setRecentEntries(entriesData.data || []);
+        } else {
+          const entriesData = await entriesResponse.json();
+          console.log('Resposta da API:', entriesData);
+          
+          // A API retorna os dados no campo 'data'
+          setRecentEntries(entriesData.data || []);
         }
-      ]);
-      
-      setError(null); // Remove o erro para mostrar os dados de demo
-    } finally {
-      setLoading(false);
-    }
-  };
+
+        // Buscar estatísticas (se disponível)
+        try {
+          const statsUrl = `${API_URL}/stats?API_KEY=${API_KEY}`;
+          const statsResponse = await fetch(statsUrl, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (statsResponse.ok) {
+            const statsData = await statsResponse.json();
+            setStats(statsData);
+          }
+        } catch (statsError) {
+          console.log('Estatísticas não disponíveis:', statsError.message);
+          // Não definir erro, pois as entradas são mais importantes
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Erro ao carregar dados:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -163,7 +160,7 @@ export default function HomePage() {
               <Button 
                 size="sm" 
                 className="mt-2"
-                onClick={loadDashboardData}
+                onClick={() => window.location.reload()}
               >
                 Tentar novamente
               </Button>
