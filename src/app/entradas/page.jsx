@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import { Card, Button, Badge, LoadingSpinner, Input, Select } from '../../components/ui';
 import Link from 'next/link';
-import apiService from '../../services/api';
 import styles from './entradas.module.css';
 
 export default function EntradasPage() {
@@ -19,20 +18,69 @@ export default function EntradasPage() {
     favorites: ''
   });
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+  const API_KEY = 'entre-linhas-2024';
+
   useEffect(() => {
     loadEntries();
   }, [filters]);
 
   const loadEntries = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
+      // Construir query params para filtros
+      const queryParams = new URLSearchParams();
+      queryParams.append('API_KEY', API_KEY);
       
-      const response = await apiService.getDiaryEntries(filters);
-      setEntries(response.data || []);
+      if (filters.startDate) queryParams.append('startDate', filters.startDate);
+      if (filters.endDate) queryParams.append('endDate', filters.endDate);
+      if (filters.mood) queryParams.append('mood', filters.mood);
+      if (filters.tag) queryParams.append('tag', filters.tag);
+      if (filters.favorites === 'true') queryParams.append('favorites', 'true');
+
+      // Buscar entradas
+      const entriesUrl = `${API_URL}/api/diary-entries?${queryParams.toString()}`;
+      console.log('Fazendo requisição para entradas:', entriesUrl);
+      
+      const entriesResponse = await fetch(entriesUrl, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      console.log('Status da resposta entradas:', entriesResponse.status);
+      
+      if (!entriesResponse.ok) {
+        // Tentar formato alternativo se o primeiro falhar
+        console.log('Tentando formato alternativo...');
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries?${queryParams.toString()}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error(`Erro ao buscar entradas: ${entriesResponse.status} - ${alternativeResponse.status}`);
+        }
+        
+        const entriesData = await alternativeResponse.json();
+        console.log('Resposta da API (alternativa):', entriesData);
+        setEntries(entriesData.data || entriesData || []);
+      } else {
+        const entriesData = await entriesResponse.json();
+        console.log('Resposta da API:', entriesData);
+        
+        // A API retorna os dados no campo 'data'
+        setEntries(entriesData.data || entriesData || []);
+      }
     } catch (err) {
+      setError(err.message);
       console.error('Erro ao carregar entradas:', err);
-      setError('Não foi possível carregar as entradas.');
     } finally {
       setLoading(false);
     }

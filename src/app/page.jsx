@@ -13,7 +13,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = 'http://localhost:3002/api';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';  
   const API_KEY = 'entre-linhas-2024';
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function HomePage() {
 
       try {
         // Buscar entradas recentes
-        const entriesUrl = `${API_URL}/diary-entries?API_KEY=${API_KEY}`;
+        const entriesUrl = `${API_URL}/api/diary-entries?API_KEY=${API_KEY}`;
         console.log('Fazendo requisição para:', entriesUrl);
         
         const entriesResponse = await fetch(entriesUrl, {

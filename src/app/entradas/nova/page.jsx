@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../components/Layout';
 import { Card, Button, Input, Textarea, Select, Badge } from '../../../components/ui';
-import apiService from '../../../services/api';
 
 export default function NovaEntradaPage() {
   const router = useRouter();
@@ -18,6 +17,9 @@ export default function NovaEntradaPage() {
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+  const API_KEY = 'entre-linhas-2024';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,21 +52,78 @@ export default function NovaEntradaPage() {
         ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
         : [];
 
+      const entryData = {
+        title: formData.title,
+        content: formData.content,
+        entry_date: formData.entryDate,
+        mood: formData.mood,
+        tags: tagsArray
+      };
+
       if (photo) {
         const formDataWithPhoto = new FormData();
         formDataWithPhoto.append('title', formData.title);
         formDataWithPhoto.append('content', formData.content);
-        formDataWithPhoto.append('entryDate', formData.entryDate);
+        formDataWithPhoto.append('entry_date', formData.entryDate);
         formDataWithPhoto.append('mood', formData.mood);
         formDataWithPhoto.append('tags', JSON.stringify(tagsArray));
         formDataWithPhoto.append('photo', photo);
 
-        await apiService.createDiaryEntryWithPhoto(formDataWithPhoto);
-      } else {
-        await apiService.createDiaryEntry({
-          ...formData,
-          tags: tagsArray
+        const createUrl = `${API_URL}/api/diary-entries?API_KEY=${API_KEY}`;
+        console.log('Criando entrada com foto:', createUrl);
+        
+        const createResponse = await fetch(createUrl, {
+          method: 'POST',
+          headers: {
+            'x-api-key': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          },
+          body: formDataWithPhoto
         });
+
+        if (!createResponse.ok) {
+          // Tentar formato alternativo
+          const alternativeResponse = await fetch(`${API_URL}/api/diary-entries`, {
+            method: 'POST',
+            headers: {
+              'API-KEY': API_KEY
+            },
+            body: formDataWithPhoto
+          });
+          
+          if (!alternativeResponse.ok) {
+            throw new Error('Erro ao criar entrada com foto');
+          }
+        }
+      } else {
+        const createUrl = `${API_URL}/api/diary-entries?API_KEY=${API_KEY}`;
+        console.log('Criando entrada:', createUrl);
+        
+        const createResponse = await fetch(createUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          },
+          body: JSON.stringify(entryData)
+        });
+
+        if (!createResponse.ok) {
+          // Tentar formato alternativo
+          const alternativeResponse = await fetch(`${API_URL}/api/diary-entries`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'API-KEY': API_KEY
+            },
+            body: JSON.stringify(entryData)
+          });
+          
+          if (!alternativeResponse.ok) {
+            throw new Error('Erro ao criar entrada');
+          }
+        }
       }
 
       router.push('/entradas');

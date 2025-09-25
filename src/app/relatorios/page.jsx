@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Layout from '../../components/Layout';
 import { Card, Button, Input, Select, LoadingSpinner } from '../../components/ui';
-import apiService from '../../services/api';
 import styles from './relatorios.module.css';
 
 export default function RelatoriosPage() {
@@ -15,6 +14,9 @@ export default function RelatoriosPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+  const API_KEY = 'entre-linhas-2024';
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({
@@ -37,14 +39,58 @@ export default function RelatoriosPage() {
       setLoading(true);
       setError(null);
 
-      const blob = await apiService.exportDiaryToPDF(filters);
+      // Construir query params para filtros
+      const queryParams = new URLSearchParams();
+      queryParams.append('API_KEY', API_KEY);
       
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
+      if (filters.startDate) queryParams.append('startDate', filters.startDate);
+      if (filters.endDate) queryParams.append('endDate', filters.endDate);
+      if (filters.mood) queryParams.append('mood', filters.mood);
+      if (filters.favorites === 'true') queryParams.append('favorites', 'true');
+
+      // Fazer requisição para exportar PDF
+      const exportUrl = `${API_URL}/api/export/pdf?${queryParams.toString()}`;
+      console.log('Exportando PDF:', exportUrl);
       
-      const today = new Date().toISOString().split('T')[0];
-      link.download = `diario-entrepaginas-${today}.pdf`;
+      const exportResponse = await fetch(exportUrl, {
+        method: 'GET',
+        headers: {
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      if (!exportResponse.ok) {
+        // Tentar formato alternativo
+        const alternativeResponse = await fetch(`${API_URL}/api/export/pdf?${queryParams.toString()}`, {
+          method: 'GET',
+          headers: {
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error('Erro ao gerar relatório PDF');
+        }
+        
+        const blob = await alternativeResponse.blob();
+        
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        const today = new Date().toISOString().split('T')[0];
+        link.download = `diario-entrepaginas-${today}.pdf`;
+      } else {
+        const blob = await exportResponse.blob();
+        
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        const today = new Date().toISOString().split('T')[0];
+        link.download = `diario-entrepaginas-${today}.pdf`;
+      }
       
       document.body.appendChild(link);
       link.click();

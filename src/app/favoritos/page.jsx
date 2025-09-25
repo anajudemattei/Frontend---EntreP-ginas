@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import { Card, Button, Badge, LoadingSpinner } from '../../components/ui';
 import Link from 'next/link';
-import apiService from '../../services/api';
 import styles from './favoritos.module.css';
 
 export default function FavoritosPage() {
@@ -12,20 +11,59 @@ export default function FavoritosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+  const API_KEY = 'entre-linhas-2024';
+
   useEffect(() => {
     loadFavorites();
   }, []);
 
   const loadFavorites = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
+      // Buscar entradas favoritas
+      const favoritesUrl = `${API_URL}/api/diary-entries/favorites?API_KEY=${API_KEY}`;
+      console.log('Fazendo requisição para favoritos:', favoritesUrl);
       
-      const response = await apiService.getFavoriteDiaryEntries();
-      setFavorites(response.data || []);
+      const favoritesResponse = await fetch(favoritesUrl, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      console.log('Status da resposta favoritos:', favoritesResponse.status);
+      
+      if (!favoritesResponse.ok) {
+        // Tentar formato alternativo se o primeiro falhar
+        console.log('Tentando formato alternativo...');
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/favorites`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error(`Erro ao buscar favoritos: ${favoritesResponse.status} - ${alternativeResponse.status}`);
+        }
+        
+        const favoritesData = await alternativeResponse.json();
+        console.log('Resposta da API (alternativa):', favoritesData);
+        setFavorites(favoritesData.data || favoritesData || []);
+      } else {
+        const favoritesData = await favoritesResponse.json();
+        console.log('Resposta da API:', favoritesData);
+        
+        // A API retorna os dados no campo 'data'
+        setFavorites(favoritesData.data || favoritesData || []);
+      }
     } catch (err) {
+      setError(err.message);
       console.error('Erro ao carregar favoritos:', err);
-      setError('Não foi possível carregar os favoritos.');
     } finally {
       setLoading(false);
     }
@@ -33,7 +71,34 @@ export default function FavoritosPage() {
 
   const handleToggleFavorite = async (id) => {
     try {
-      await apiService.toggleFavorite(id);
+      const toggleUrl = `${API_URL}/api/diary-entries/${id}/favorite?API_KEY=${API_KEY}`;
+      console.log('Removendo favorito:', toggleUrl);
+      
+      const toggleResponse = await fetch(toggleUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      if (!toggleResponse.ok) {
+        // Tentar formato alternativo
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${id}/favorite`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error('Erro ao remover favorito');
+        }
+      }
+
+      // Remove da lista local
       setFavorites(prev => prev.filter(entry => entry.id !== id));
     } catch (err) {
       console.error('Erro ao remover favorito:', err);

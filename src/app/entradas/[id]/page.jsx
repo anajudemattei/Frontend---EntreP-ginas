@@ -6,13 +6,15 @@ import Layout from '../../../components/Layout';
 import { Card, Button, Badge, LoadingSpinner } from '../../../components/ui';
 import Link from 'next/link';
 import Image from 'next/image';
-import apiService from '../../../services/api';
 
 export default function EntradaPage({ params }) {
   const router = useRouter();
   const [entry, setEntry] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+  const API_KEY = 'entre-linhas-2024';
 
   useEffect(() => {
     if (params.id) {
@@ -21,15 +23,51 @@ export default function EntradaPage({ params }) {
   }, [params.id]);
 
   const loadEntry = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
+      // Buscar entrada específica
+      const entryUrl = `${API_URL}/api/diary-entries/${params.id}?API_KEY=${API_KEY}`;
+      console.log('Fazendo requisição para entrada:', entryUrl);
       
-      const response = await apiService.getDiaryEntry(params.id);
-      setEntry(response.data);
+      const entryResponse = await fetch(entryUrl, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      console.log('Status da resposta entrada:', entryResponse.status);
+      
+      if (!entryResponse.ok) {
+        // Tentar formato alternativo se o primeiro falhar
+        console.log('Tentando formato alternativo...');
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${params.id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error(`Entrada não encontrada: ${entryResponse.status} - ${alternativeResponse.status}`);
+        }
+        
+        const entryData = await alternativeResponse.json();
+        console.log('Resposta da API (alternativa):', entryData);
+        setEntry(entryData.data || entryData);
+      } else {
+        const entryData = await entryResponse.json();
+        console.log('Resposta da API:', entryData);
+        
+        // A API retorna os dados no campo 'data'
+        setEntry(entryData.data || entryData);
+      }
     } catch (err) {
+      setError(err.message);
       console.error('Erro ao carregar entrada:', err);
-      setError('Entrada não encontrada.');
     } finally {
       setLoading(false);
     }
@@ -41,7 +79,33 @@ export default function EntradaPage({ params }) {
     }
 
     try {
-      await apiService.deleteDiaryEntry(params.id);
+      const deleteUrl = `${API_URL}/api/diary-entries/${params.id}?API_KEY=${API_KEY}`;
+      console.log('Deletando entrada:', deleteUrl);
+      
+      const deleteResponse = await fetch(deleteUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      if (!deleteResponse.ok) {
+        // Tentar formato alternativo
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${params.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error('Erro ao deletar entrada');
+        }
+      }
+
       router.push('/entradas');
     } catch (err) {
       console.error('Erro ao deletar entrada:', err);
