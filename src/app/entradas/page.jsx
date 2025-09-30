@@ -10,6 +10,7 @@ export default function EntradasPage() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
@@ -103,6 +104,19 @@ export default function EntradasPage() {
     });
   };
 
+  const filteredEntries = entries.filter(entry => {
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    
+    return (
+      entry.title?.toLowerCase().includes(searchLower) ||
+      entry.content?.toLowerCase().includes(searchLower) ||
+      entry.mood?.toLowerCase().includes(searchLower) ||
+      entry.tags?.some(tag => tag.toLowerCase().includes(searchLower))
+    );
+  });
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -171,9 +185,36 @@ export default function EntradasPage() {
               Minhas Entradas
             </h1>
             <p className={styles.subtitle}>
-              {entries.length} {entries.length === 1 ? 'entrada encontrada' : 'entradas encontradas'}
+              {filteredEntries.length} {filteredEntries.length === 1 ? 'entrada encontrada' : 'entradas encontradas'}
             </p>
           </div>
+        </div>
+
+        {/* Barra de Pesquisa */}
+        <div className={styles.searchSection}>
+          <Card className={styles.searchCard}>
+            <div className={styles.searchContainer}>
+              <div className={styles.searchInputWrapper}>
+                <span className={styles.searchIcon}>🔍</span>
+                <Input
+                  type="text"
+                  placeholder="Pesquisar por título, conteúdo, humor ou tags..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className={styles.clearSearchButton}
+                    aria-label="Limpar pesquisa"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Filtros */}
@@ -248,15 +289,15 @@ export default function EntradasPage() {
             <p className={styles.errorMessage}>{error}</p>
             <Button onClick={loadEntries}>Tentar novamente</Button>
           </Card>
-        ) : entries.length === 0 ? (
+        ) : filteredEntries.length === 0 ? (
           <Card className={styles.emptyCard}>
             <div className={styles.emptyIcon}>📖</div>
             <h3 className={styles.emptyTitle}>
               Nenhuma entrada encontrada
             </h3>
             <p className={styles.emptyText}>
-              {Object.values(filters).some(f => f) 
-                ? 'Tente ajustar os filtros ou criar uma nova entrada.'
+              {Object.values(filters).some(f => f) || searchTerm
+                ? 'Tente ajustar os filtros/pesquisa ou criar uma nova entrada.'
                 : 'Que tal começar escrevendo sua primeira entrada?'
               }
             </p>
@@ -266,7 +307,7 @@ export default function EntradasPage() {
           </Card>
         ) : (
           <div className={styles.entriesGrid}>
-            {entries.map((entry) => (
+            {filteredEntries.map((entry) => (
               <Card key={entry.id} className={styles.entryCard}>
                 <div className={styles.entryHeader}>
                   <h3 className={styles.entryTitle}>
@@ -338,7 +379,7 @@ export default function EntradasPage() {
         )}
         
         {/* Botão Voltar ao Topo */}
-        {entries.length > 0 && (
+        {filteredEntries.length > 0 && (
           <div className={styles.backToTop}>
             <Button
               onClick={scrollToTop}
