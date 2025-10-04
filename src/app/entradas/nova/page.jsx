@@ -52,14 +52,7 @@ export default function NovaEntradaPage() {
         ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
         : [];
 
-      const entryData = {
-        title: formData.title,
-        content: formData.content,
-        entry_date: formData.entryDate,
-        mood: formData.mood,
-        tags: tagsArray
-      };
-
+      // Se tem foto, usa FormData, senão usa JSON
       if (photo) {
         const formDataWithPhoto = new FormData();
         formDataWithPhoto.append('title', formData.title);
@@ -69,67 +62,120 @@ export default function NovaEntradaPage() {
         formDataWithPhoto.append('tags', JSON.stringify(tagsArray));
         formDataWithPhoto.append('photo', photo);
 
-        const createUrl = `${API_URL}/api/diary-entries?API_KEY=${API_KEY}`;
-        console.log('Criando entrada com foto:', createUrl);
+        console.log('Enviando entrada com foto...');
         
-        const createResponse = await fetch(createUrl, {
-          method: 'POST',
-          headers: {
-            'x-api-key': API_KEY,
-            'Authorization': `Bearer ${API_KEY}`
-          },
-          body: formDataWithPhoto
-        });
+        // Tentar múltiplas URLs e variações
+        const urls = [
+          `${API_URL}/api/diary-entries`,
+          `${API_URL}/diary-entries`,
+          `${API_URL}/api/entries`,
+          `${API_URL}/entries`,
+          'http://localhost:4002/api/diary-entries',
+          'http://localhost:4002/diary-entries'
+        ];
 
-        if (!createResponse.ok) {
-          // Tentar formato alternativo
-          const alternativeResponse = await fetch(`${API_URL}/api/diary-entries`, {
-            method: 'POST',
-            headers: {
-              'API-KEY': API_KEY
-            },
-            body: formDataWithPhoto
-          });
-          
-          if (!alternativeResponse.ok) {
-            throw new Error('Erro ao criar entrada com foto');
+        let success = false;
+        let lastError = null;
+
+        for (const url of urls) {
+          try {
+            console.log(`Tentando URL: ${url}`);
+            
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'x-api-key': API_KEY,
+                'Authorization': `Bearer ${API_KEY}`
+              },
+              body: formDataWithPhoto
+            });
+
+            console.log(`Resposta status: ${response.status}`);
+
+            if (response.ok) {
+              success = true;
+              console.log('✅ Entrada criada com sucesso!');
+              break;
+            } else {
+              const errorText = await response.text();
+              console.error(`❌ Erro na resposta: ${errorText}`);
+              lastError = errorText;
+            }
+          } catch (err) {
+            console.error(`❌ Erro ao tentar ${url}:`, err.message);
+            lastError = err.message;
           }
         }
-      } else {
-        const createUrl = `${API_URL}/api/diary-entries?API_KEY=${API_KEY}`;
-        console.log('Criando entrada:', createUrl);
-        
-        const createResponse = await fetch(createUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_KEY,
-            'Authorization': `Bearer ${API_KEY}`
-          },
-          body: JSON.stringify(entryData)
-        });
 
-        if (!createResponse.ok) {
-          // Tentar formato alternativo
-          const alternativeResponse = await fetch(`${API_URL}/api/diary-entries`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'API-KEY': API_KEY
-            },
-            body: JSON.stringify(entryData)
-          });
-          
-          if (!alternativeResponse.ok) {
-            throw new Error('Erro ao criar entrada');
+        if (!success) {
+          throw new Error(`Back-end não disponível. Erro: ${lastError || 'Verifique se está rodando na porta 4002'}`);
+        }
+
+      } else {
+        // Sem foto, envia JSON
+        const entryData = {
+          title: formData.title,
+          content: formData.content,
+          entry_date: formData.entryDate,
+          mood: formData.mood,
+          tags: tagsArray
+        };
+
+        console.log('Enviando entrada sem foto...', entryData);
+        
+        // Tentar múltiplas URLs e variações
+        const urls = [
+          `${API_URL}/api/diary-entries`,
+          `${API_URL}/diary-entries`,
+          `${API_URL}/api/entries`,
+          `${API_URL}/entries`,
+          'http://localhost:4002/api/diary-entries',
+          'http://localhost:4002/diary-entries'
+        ];
+
+        let success = false;
+        let lastError = null;
+
+        for (const url of urls) {
+          try {
+            console.log(`Tentando URL: ${url}`);
+            
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': API_KEY,
+                'Authorization': `Bearer ${API_KEY}`
+              },
+              body: JSON.stringify(entryData)
+            });
+
+            console.log(`Resposta status: ${response.status}`);
+
+            if (response.ok) {
+              success = true;
+              console.log('✅ Entrada criada com sucesso!');
+              break;
+            } else {
+              const errorText = await response.text();
+              console.error(`❌ Erro na resposta: ${errorText}`);
+              lastError = errorText;
+            }
+          } catch (err) {
+            console.error(`❌ Erro ao tentar ${url}:`, err.message);
+            lastError = err.message;
           }
+        }
+
+        if (!success) {
+          throw new Error(`Back-end não disponível. Erro: ${lastError || 'Verifique se está rodando na porta 4002'}`);
         }
       }
 
       router.push('/entradas');
     } catch (err) {
       console.error('Erro ao criar entrada:', err);
-      setError('Erro ao criar entrada. Tente novamente.');
+      setError(`Erro ao criar entrada: ${err.message}`);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../components/Layout';
 import { Card, Button, Badge, LoadingSpinner } from '../../../components/ui';
@@ -9,6 +9,7 @@ import Image from 'next/image';
 
 export default function EntradaPage({ params }) {
   const router = useRouter();
+  const resolvedParams = use(params);
   const [entry, setEntry] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,10 +18,10 @@ export default function EntradaPage({ params }) {
   const API_KEY = 'entre-linhas-2024';
 
   useEffect(() => {
-    if (params.id) {
+    if (resolvedParams.id) {
       loadEntry();
     }
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const loadEntry = async () => {
     setLoading(true);
@@ -28,7 +29,7 @@ export default function EntradaPage({ params }) {
 
     try {
       // Buscar entrada específica
-      const entryUrl = `${API_URL}/api/diary-entries/${params.id}?API_KEY=${API_KEY}`;
+      const entryUrl = `${API_URL}/api/diary-entries/${resolvedParams.id}?API_KEY=${API_KEY}`;
       console.log('Fazendo requisição para entrada:', entryUrl);
       
       const entryResponse = await fetch(entryUrl, {
@@ -44,7 +45,7 @@ export default function EntradaPage({ params }) {
       if (!entryResponse.ok) {
         // Tentar formato alternativo se o primeiro falhar
         console.log('Tentando formato alternativo...');
-        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${params.id}`, {
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${resolvedParams.id}`, {
           headers: {
             'Content-Type': 'application/json',
             'API-KEY': API_KEY
@@ -114,15 +115,45 @@ export default function EntradaPage({ params }) {
   };
 
   const handleToggleFavorite = async () => {
+
     try {
-      await apiService.toggleFavorite(params.id);
+      const favoriteUrl = `${API_URL}/api/diary-entries/${params.id}/favorite?API_KEY=${API_KEY}`;
+      console.log('Alterando favorito:', favoriteUrl);
+      
+      const favoriteResponse = await fetch(favoriteUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      if (!favoriteResponse.ok) {
+        // Tentar formato alternativo
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${params.id}/favorite`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error('Erro ao alterar favorito');
+        }
+      }
+
+      // Atualiza o estado local
       setEntry(prev => ({
         ...prev,
         is_favorite: !prev.is_favorite
       }));
+      
+      console.log('Favorito alterado com sucesso!');
     } catch (err) {
       console.error('Erro ao alterar favorito:', err);
-      alert('Erro ao alterar favorito.');
+      alert('Erro ao alterar favorito. Verifique se o back-end está rodando.');
     }
   };
 
@@ -188,55 +219,96 @@ export default function EntradaPage({ params }) {
     <Layout>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex justify-between items-start mb-8">
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-2">
-              <Link href="/entradas">
-                <Button size="sm">
-                  ← Voltar
-                </Button>
-              </Link>
-            </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              {entry.title}
-            </h1>
-            <div className="flex items-center space-x-4 text-muted">
-              <span>{formatDate(entry.entry_date)}</span>
-              {entry.created_at && (
-                <span className="text-sm">
-                  Criado em {formatDateTime(entry.created_at)}
-                </span>
-              )}
-              {entry.updated_at && entry.updated_at !== entry.created_at && (
-                <span className="text-sm">
-                  Atualizado em {formatDateTime(entry.updated_at)}
-                </span>
-              )}
-            </div>
+        <div className="mb-12">
+          <div className="flex items-center space-x-2 mb-2">
+            <Link href="/entradas">
+              <Button size="sm">
+                ← Voltar
+              </Button>
+            </Link>
           </div>
-          
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleToggleFavorite}
-              className="text-warning hover:scale-110 transition-transform text-2xl"
-            >
-              {entry.is_favorite ? '⭐' : '☆'}
-            </button>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            {entry.title}
+          </h1>
+          <div className="flex items-center space-x-4 text-muted">
+            <span>{formatDate(entry.entry_date)}</span>
+            {entry.created_at && (
+              <span className="text-sm">
+                Criado em {formatDateTime(entry.created_at)}
+              </span>
+            )}
+            {entry.updated_at && entry.updated_at !== entry.created_at && (
+              <span className="text-sm">
+                Atualizado em {formatDateTime(entry.updated_at)}
+              </span>
+            )}
           </div>
         </div>
 
         {/* Conteúdo */}
-        <Card className="mb-6">
-          {/* Metadados */}
-          <div className="flex flex-wrap gap-2 mb-6">
+        <Card className="mb-10 p-8">
+
+          {/* Foto */}
+          {entry.photo && (() => {
+            // Construir URL da imagem de forma segura
+            let photoUrl = entry.photo;
+            
+            // Se já é uma URL completa, usar diretamente
+            if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
+              return (
+                <div className="float-left mr-8 mb-6">
+                  <div className="relative" style={{ width: '150px' }}>
+                    <Image
+                      src={photoUrl}
+                      alt="Foto da entrada"
+                      width={150}
+                      height={150}
+                      className="rounded-2xl shadow-sm object-cover aspect-square"
+                    />
+                  </div>
+                </div>
+              );
+            }
+            
+            // Construir URL relativa
+            const baseUrl = 'http://localhost:4002';
+            
+            // Remover /uploads/ duplicado se existir
+            if (photoUrl.includes('/uploads/')) {
+              photoUrl = photoUrl.substring(photoUrl.indexOf('/uploads/'));
+            } else if (!photoUrl.startsWith('/')) {
+              photoUrl = `/uploads/${photoUrl}`;
+            }
+            
+            const fullUrl = `${baseUrl}${photoUrl}`;
+            
+            return (
+              <div className="float-left mr-8 mb-6">
+                <div className="relative" style={{ width: '150px' }}>
+                  <Image
+                    src={fullUrl}
+                    alt="Foto da entrada"
+                    width={150}
+                    height={150}
+                    className="rounded-2xl shadow-sm object-cover aspect-square"
+                  />
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Conteúdo */}
+          <div className="prose prose-xl max-w-none mb-8">
+            <div className="whitespace-pre-wrap text-foreground leading-relaxed text-lg">
+              {entry.content}
+            </div>
+          </div>
+
+          {/* Tags e Metadados */}
+          <div className="flex flex-wrap gap-3 pt-8 mt-4 border-t border-border clear-both">
             {entry.mood && (
               <Badge variant="secondary">
                 {getMoodEmoji(entry.mood)} {entry.mood}
-              </Badge>
-            )}
-            {entry.is_favorite && (
-              <Badge variant="warning">
-                ⭐ Favorito
               </Badge>
             )}
             {entry.tags && entry.tags.length > 0 && (
@@ -247,33 +319,11 @@ export default function EntradaPage({ params }) {
               ))
             )}
           </div>
-
-          {/* Foto */}
-          {entry.photo && (
-            <div className="mb-6">
-              <div className="relative w-full max-w-2xl mx-auto">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3000'}/uploads/${entry.photo}`}
-                  alt="Foto da entrada"
-                  width={800}
-                  height={600}
-                  className="rounded-lg shadow-diary object-cover"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Conteúdo */}
-          <div className="prose prose-lg max-w-none">
-            <div className="whitespace-pre-wrap text-foreground leading-relaxed">
-              {entry.content}
-            </div>
-          </div>
         </Card>
 
         {/* Ações */}
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-2">
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex gap-4">
             <Link href={`/entradas/${entry.id}/editar`}>
               <Button>
                 ✏️ Editar
@@ -287,7 +337,7 @@ export default function EntradaPage({ params }) {
             </Button>
           </div>
           
-          <div className="flex space-x-2">
+          <div>
             <Button
               onClick={handleToggleFavorite}
             >

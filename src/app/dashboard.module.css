@@ -190,8 +190,9 @@
 }
 
 .entryCard:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(139, 90, 60, 0.25);
+  border-left-color: var(--secondary);
 }
 
 .entryHeader {
@@ -268,12 +269,19 @@
   transition: all 0.2s;
   font-size: 0.875rem;
   font-weight: 500;
+  cursor: pointer;
+  text-align: center;
 }
 
 .quickActionButton:hover {
   border-color: var(--primary);
-  background-color: rgba(var(--primary-rgb), 0.05);
-  transform: translateY(-1px);
+  background-color: rgba(139, 90, 60, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 90, 60, 0.2);
+}
+
+.quickActionButton:active {
+  transform: translateY(0);
 }
 
 .quickActionIcon {

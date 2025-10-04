@@ -109,12 +109,8 @@ export default function EntradasPage() {
     
     const searchLower = searchTerm.toLowerCase();
     
-    return (
-      entry.title?.toLowerCase().includes(searchLower) ||
-      entry.content?.toLowerCase().includes(searchLower) ||
-      entry.mood?.toLowerCase().includes(searchLower) ||
-      entry.tags?.some(tag => tag.toLowerCase().includes(searchLower))
-    );
+    // Busca apenas pelo título
+    return entry.title?.toLowerCase().includes(searchLower);
   });
 
   const scrollToTop = () => {
@@ -130,25 +126,82 @@ export default function EntradasPage() {
     }
 
     try {
-      await apiService.deleteDiaryEntry(id);
+      const deleteUrl = `${API_URL}/api/diary-entries/${id}?API_KEY=${API_KEY}`;
+      console.log('Deletando entrada:', deleteUrl);
+      
+      const deleteResponse = await fetch(deleteUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      if (!deleteResponse.ok) {
+        // Tentar formato alternativo
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error('Erro ao deletar entrada');
+        }
+      }
+
+      // Remove a entrada da lista
       setEntries(prev => prev.filter(entry => entry.id !== id));
+      console.log('Entrada deletada com sucesso!');
     } catch (err) {
       console.error('Erro ao deletar entrada:', err);
-      alert('Erro ao deletar entrada.');
+      alert('Erro ao deletar entrada. Verifique se o back-end está rodando.');
     }
   };
 
   const handleToggleFavorite = async (id) => {
     try {
-      await apiService.toggleFavorite(id);
+      const favoriteUrl = `${API_URL}/api/diary-entries/${id}/favorite?API_KEY=${API_KEY}`;
+      console.log('Alterando favorito:', favoriteUrl);
+      
+      const favoriteResponse = await fetch(favoriteUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'Authorization': `Bearer ${API_KEY}`
+        }
+      });
+
+      if (!favoriteResponse.ok) {
+        // Tentar formato alternativo
+        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${id}/favorite`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        
+        if (!alternativeResponse.ok) {
+          throw new Error('Erro ao alterar favorito');
+        }
+      }
+
+      // Atualiza o estado local
       setEntries(prev => prev.map(entry => 
         entry.id === id 
           ? { ...entry, is_favorite: !entry.is_favorite }
           : entry
       ));
+      
+      console.log('Favorito alterado com sucesso!');
     } catch (err) {
       console.error('Erro ao alterar favorito:', err);
-      alert('Erro ao alterar favorito.');
+      alert('Erro ao alterar favorito. Verifique se o back-end está rodando.');
     }
   };
 
@@ -198,7 +251,7 @@ export default function EntradasPage() {
                 <span className={styles.searchIcon}>🔍</span>
                 <Input
                   type="text"
-                  placeholder="Pesquisar por título, conteúdo, humor ou tags..."
+                  placeholder="Pesquisar por título..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={styles.searchInput}

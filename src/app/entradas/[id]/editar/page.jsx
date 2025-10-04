@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../../components/Layout';
 import { Card, Button, Input, Textarea, Select, Badge, LoadingSpinner } from '../../../../components/ui';
@@ -8,6 +8,7 @@ import apiService from '../../../../services/api';
 
 export default function EditarEntradaPage({ params }) {
   const router = useRouter();
+  const resolvedParams = use(params);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -22,17 +23,17 @@ export default function EditarEntradaPage({ params }) {
   const [originalEntry, setOriginalEntry] = useState(null);
 
   useEffect(() => {
-    if (params.id) {
+    if (resolvedParams.id) {
       loadEntry();
     }
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const loadEntry = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await apiService.getDiaryEntry(params.id);
+      const response = await apiService.getDiaryEntry(resolvedParams.id);
       const entry = response.data;
       
       setOriginalEntry(entry);
@@ -76,7 +77,7 @@ export default function EditarEntradaPage({ params }) {
         ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
         : [];
 
-      await apiService.updateDiaryEntry(params.id, {
+      await apiService.updateDiaryEntry(resolvedParams.id, {
         title: formData.title,
         content: formData.content,
         entryDate: formData.entryDate,

@@ -52,13 +52,20 @@ export default function HomePage() {
           
           const entriesData = await alternativeResponse.json();
           console.log('Resposta da API (alternativa):', entriesData);
-          setRecentEntries(entriesData.data || []);
+          
+          // Pegar apenas as 5 últimas entradas
+          const allEntries = entriesData.data || [];
+          const last5Entries = allEntries.slice(0, 5);
+          setRecentEntries(last5Entries);
         } else {
           const entriesData = await entriesResponse.json();
           console.log('Resposta da API:', entriesData);
           
           // A API retorna os dados no campo 'data'
-          setRecentEntries(entriesData.data || []);
+          // Pegar apenas as 5 últimas entradas
+          const allEntries = entriesData.data || [];
+          const last5Entries = allEntries.slice(0, 5);
+          setRecentEntries(last5Entries);
         }
 
         // Buscar estatísticas (se disponível)
@@ -227,38 +234,40 @@ export default function HomePage() {
               ) : (
                 <div className={styles.entriesGrid}>
                   {recentEntries.map((entry) => (
-                    <Card key={entry.id} className={styles.entryCard}>
-                      <div className={styles.entryHeader}>
-                        <h3 className={styles.entryTitle}>
-                          {entry.title}
-                        </h3>
-                        <div className={styles.entryMood}>
-                          {getMoodEmoji(entry.mood)}
+                    <Link key={entry.id} href={`/entradas/${entry.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <Card className={styles.entryCard}>
+                        <div className={styles.entryHeader}>
+                          <h3 className={styles.entryTitle}>
+                            {entry.title}
+                          </h3>
+                          <div className={styles.entryMood}>
+                            {getMoodEmoji(entry.mood)}
+                          </div>
                         </div>
-                      </div>
-                      <p className={styles.entryDate}>
-                        {formatDate(entry.entry_date)}
-                      </p>
-                      <p className={styles.entryPreview}>
-                        {entry.content?.substring(0, 120)}...
-                      </p>
-                      <div className={styles.entryFooter}>
-                        {entry.tags && (
-                          <div className="flex gap-1 flex-wrap">
-                            {entry.tags.slice(0, 2).map((tag, index) => (
-                              <Badge key={index} variant="secondary" size="sm">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-                        {entry.is_favorite && (
-                          <div className={styles.favoriteIcon}>
-                            ⭐
-                          </div>
-                        )}
-                      </div>
-                    </Card>
+                        <p className={styles.entryDate}>
+                          {formatDate(entry.entry_date)}
+                        </p>
+                        <p className={styles.entryPreview}>
+                          {entry.content?.substring(0, 120)}...
+                        </p>
+                        <div className={styles.entryFooter}>
+                          {entry.tags && (
+                            <div className="flex gap-1 flex-wrap">
+                              {entry.tags.slice(0, 2).map((tag, index) => (
+                                <Badge key={index} variant="secondary" size="sm">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                          {entry.is_favorite && (
+                            <div className={styles.favoriteIcon}>
+                              ⭐
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    </Link>
                   ))}
                 </div>
               )}

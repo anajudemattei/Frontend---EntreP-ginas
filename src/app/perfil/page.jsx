@@ -6,12 +6,15 @@ import { Card, Button, Input, Textarea, LoadingSpinner, Badge } from '../../comp
 import Image from 'next/image';
 import styles from './perfil.module.css';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'entre-linhas-2024';
+
 export default function PerfilPage() {
   const [user, setUser] = useState({
-    name: 'Ana Silva',
-    email: 'ana@exemplo.com',
-    bio: 'Apaixonada por escrever e compartilhar experiências através do meu diário pessoal.',
-    avatar: '/placeholder-avatar.jpg',
+    name: 'Ana Julia Pinheiro Demattei',
+    email: 'ana.demattei@aluno.senai.br',
+    bio: 'Estudante de Desenvolvimento de Sistemas no SENAI Valinhos. Apaixonada por tecnologia, leitura e artes. Criadora do projeto Entre Páginas - um diário digital para registrar memórias e momentos especiais.',
+    avatar: '/anajulia.jfif',
     notifications: {
       dailyReminder: true,
       weeklyReport: false,
@@ -24,18 +27,177 @@ export default function PerfilPage() {
   });
   
   const [stats, setStats] = useState({
-    totalEntries: 12,
-    totalFavorites: 4,
-    totalWords: 2847,
-    longestStreak: 15,
-    currentStreak: 7,
+    totalEntries: 0,
+    totalFavorites: 0,
+    totalWords: 0,
+    longestStreak: 0,
+    currentStreak: 0,
     joinDate: '2024-01-15'
   });
   
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(true);
   const [message, setMessage] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState('');
+
+  // Buscar estatísticas reais ao carregar a página
+  useEffect(() => {
+    fetchRealStats();
+  }, []);
+
+  const fetchRealStats = async () => {
+    try {
+      setLoadingStats(true);
+      
+      // Tentar buscar todas as entradas
+      const possibleUrls = [
+        `${API_BASE_URL}/api/diary-entries`,
+        `${API_BASE_URL}/diary-entries`,
+        `${API_BASE_URL}/api/entries`,
+        `${API_BASE_URL}/entries`
+      ];
+
+      let entries = [];
+      let success = false;
+
+      for (const url of possibleUrls) {
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'x-api-key': API_KEY,
+              'Authorization': `Bearer ${API_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            entries = Array.isArray(data) ? data : (data.entries || data.data || []);
+            success = true;
+            console.log(`Estatísticas carregadas de ${url}`);
+            break;
+          }
+        } catch (err) {
+          console.log(`Falhou em ${url}`);
+        }
+      }
+
+      if (success && entries.length > 0) {
+        calculateStats(entries);
+      } else {
+        console.log('Nenhuma entrada encontrada ou back-end não disponível');
+      }
+      
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas:', error);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  const calculateStats = (entries) => {
+    // Total de entradas
+    const totalEntries = entries.length;
+
+    // Total de favoritas
+    const totalFavorites = entries.filter(entry => entry.is_favorite || entry.isFavorite).length;
+
+    // Total de palavras
+    const totalWords = entries.reduce((sum, entry) => {
+      const content = entry.content || '';
+      const words = content.trim().split(/\s+/).filter(word => word.length > 0);
+      return sum + words.length;
+    }, 0);
+
+    // Calcular sequências (streaks)
+    const { currentStreak, longestStreak } = calculateStreaks(entries);
+
+    // Data da primeira entrada (join date)
+    const dates = entries
+      .map(entry => new Date(entry.created_at || entry.createdAt || entry.date))
+      .filter(date => !isNaN(date.getTime()))
+      .sort((a, b) => a - b);
+    
+    const joinDate = dates.length > 0 
+      ? dates[0].toISOString().split('T')[0] 
+      : '2024-01-15';
+
+    setStats({
+      totalEntries,
+      totalFavorites,
+      totalWords,
+      currentStreak,
+      longestStreak,
+      joinDate
+    });
+  };
+
+  const calculateStreaks = (entries) => {
+    if (entries.length === 0) {
+      return { currentStreak: 0, longestStreak: 0 };
+    }
+
+    // Ordenar entradas por data
+    const sortedEntries = [...entries]
+      .map(entry => ({
+        ...entry,
+        date: new Date(entry.created_at || entry.createdAt || entry.date)
+      }))
+      .filter(entry => !isNaN(entry.date.getTime()))
+      .sort((a, b) => b.date - a.date);
+
+    if (sortedEntries.length === 0) {
+      return { currentStreak: 0, longestStreak: 0 };
+    }
+
+    // Obter datas únicas (apenas dia, ignorando hora)
+    const uniqueDates = [...new Set(
+      sortedEntries.map(entry => entry.date.toISOString().split('T')[0])
+    )].sort().reverse();
+
+    // Calcular streak atual
+    let currentStreak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < uniqueDates.length; i++) {
+      const entryDate = new Date(uniqueDates[i]);
+      entryDate.setHours(0, 0, 0, 0);
+      
+      const expectedDate = new Date(today);
+      expectedDate.setDate(today.getDate() - i);
+      expectedDate.setHours(0, 0, 0, 0);
+
+      if (entryDate.getTime() === expectedDate.getTime()) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    // Calcular maior streak
+    let longestStreak = 0;
+    let tempStreak = 1;
+
+    for (let i = 1; i < uniqueDates.length; i++) {
+      const currentDate = new Date(uniqueDates[i]);
+      const previousDate = new Date(uniqueDates[i - 1]);
+      
+      const diffTime = previousDate - currentDate;
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        tempStreak++;
+      } else {
+        longestStreak = Math.max(longestStreak, tempStreak);
+        tempStreak = 1;
+      }
+    }
+    longestStreak = Math.max(longestStreak, tempStreak);
+
+    return { currentStreak, longestStreak };
+  };
 
   const handleSave = async () => {
     try {
@@ -173,7 +335,19 @@ export default function PerfilPage() {
                   <div className={styles.profileHeader}>
                     <div className={styles.avatarContainer}>
                       <div className={styles.avatar}>
-                        👤
+                        <Image
+                          src="/anajulia.jfif"
+                          alt="Ana Julia Pinheiro Demattei"
+                          width={120}
+                          height={120}
+                          style={{ 
+                            borderRadius: '50%', 
+                            objectFit: 'cover',
+                            width: '100%',
+                            height: '100%'
+                          }}
+                          priority
+                        />
                       </div>
                       {isEditing && (
                         <Button
@@ -348,30 +522,36 @@ export default function PerfilPage() {
                 <h2 className={styles.cardTitle}>
                   📊 Suas Estatísticas
                 </h2>
-                <div className={styles.statsCard}>
-                  <div className={styles.statItem}>
-                    <div className={styles.statValue}>{stats.totalEntries}</div>
-                    <div className={styles.statLabel}>Entradas totais</div>
+                {loadingStats ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                    <LoadingSpinner />
                   </div>
-                  
-                  <div className={styles.statGrid}>
-                    <div className={styles.statGridItem}>
-                      <div className={styles.statGridValue}>{stats.totalFavorites}</div>
-                      <div className={styles.statGridLabel}>Favoritas</div>
+                ) : (
+                  <div className={styles.statsCard}>
+                    <div className={styles.statItem}>
+                      <div className={styles.statValue}>{stats.totalEntries}</div>
+                      <div className={styles.statLabel}>Entradas totais</div>
                     </div>
                     
-                    <div className={styles.statGridItem}>
-                      <div className={styles.statGridValue}>{stats.totalWords}</div>
-                      <div className={styles.statGridLabel}>Palavras</div>
+                    <div className={styles.statGrid}>
+                      <div className={styles.statGridItem}>
+                        <div className={styles.statGridValue}>{stats.totalFavorites}</div>
+                        <div className={styles.statGridLabel}>Favoritas</div>
+                      </div>
+                      
+                      <div className={styles.statGridItem}>
+                        <div className={styles.statGridValue}>{stats.totalWords.toLocaleString('pt-BR')}</div>
+                        <div className={styles.statGridLabel}>Palavras</div>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.streakCard}>
+                      <div className={styles.streakValue}>{stats.currentStreak}</div>
+                      <div className={styles.streakLabel}>Dias consecutivos</div>
+                      <div className={styles.streakRecord}>Recorde: {stats.longestStreak} dias</div>
                     </div>
                   </div>
-                  
-                  <div className={styles.streakCard}>
-                    <div className={styles.streakValue}>{stats.currentStreak}</div>
-                    <div className={styles.streakLabel}>Dias consecutivos</div>
-                    <div className={styles.streakRecord}>Recorde: {stats.longestStreak} dias</div>
-                  </div>
-                </div>
+                )}
               </Card>
 
               {/* Conquistas */}
@@ -380,27 +560,39 @@ export default function PerfilPage() {
                   🏆 Conquistas
                 </h2>
                 <div className={styles.achievements}>
-                  <div className={`${styles.achievementItem} ${styles.achievementActive}`}>
+                  <div className={`${styles.achievementItem} ${stats.currentStreak >= 7 ? styles.achievementActive : styles.achievementInactive}`}>
                     <div className={styles.achievementIcon}>🏃‍♀️</div>
                     <div className={styles.achievementInfo}>
                       <div className={styles.achievementTitle}>Escritor Consistente</div>
-                      <div className={styles.achievementDesc}>7 dias consecutivos</div>
+                      <div className={styles.achievementDesc}>
+                        {stats.currentStreak >= 7 
+                          ? `${stats.currentStreak} dias consecutivos` 
+                          : `${stats.currentStreak}/7 dias consecutivos`}
+                      </div>
                     </div>
                   </div>
                   
-                  <div className={`${styles.achievementItem} ${styles.achievementSecondary}`}>
+                  <div className={`${styles.achievementItem} ${stats.totalEntries >= 12 ? styles.achievementSecondary : styles.achievementInactive}`}>
                     <div className={styles.achievementIcon}>📚</div>
                     <div className={styles.achievementInfo}>
                       <div className={styles.achievementTitle}>Primeira Dúzia</div>
-                      <div className={styles.achievementDesc}>12 entradas criadas</div>
+                      <div className={styles.achievementDesc}>
+                        {stats.totalEntries >= 12 
+                          ? `${stats.totalEntries} entradas criadas` 
+                          : `${stats.totalEntries}/12 entradas`}
+                      </div>
                     </div>
                   </div>
                   
-                  <div className={`${styles.achievementItem} ${styles.achievementInactive}`}>
-                    <div className={styles.achievementIcon}>🌟</div>
+                  <div className={`${styles.achievementItem} ${stats.totalFavorites >= 5 ? styles.achievementActive : styles.achievementInactive}`}>
+                    <div className={styles.achievementIcon}>⭐</div>
                     <div className={styles.achievementInfo}>
-                      <div className={styles.achievementTitle}>Explorador</div>
-                      <div className={styles.achievementDesc}>Use todas as funcionalidades</div>
+                      <div className={styles.achievementTitle}>Colecionador</div>
+                      <div className={styles.achievementDesc}>
+                        {stats.totalFavorites >= 5 
+                          ? `${stats.totalFavorites} favoritas` 
+                          : `${stats.totalFavorites}/5 favoritas`}
+                      </div>
                     </div>
                   </div>
                 </div>

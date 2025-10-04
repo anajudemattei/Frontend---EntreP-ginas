@@ -6,125 +6,100 @@ import { Card, Button, Input, Select, LoadingSpinner } from '../../components/ui
 import styles from './relatorios.module.css';
 
 export default function RelatoriosPage() {
-  const [filters, setFilters] = useState({
-    startDate: '',
-    endDate: '',
-    mood: '',
-    favorites: ''
-  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
   const API_KEY = 'entre-linhas-2024';
 
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      startDate: '',
-      endDate: '',
-      mood: '',
-      favorites: ''
-    });
-  };
-
   const generatePDF = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Construir query params para filtros
+      // Construir query params apenas com API_KEY
       const queryParams = new URLSearchParams();
       queryParams.append('API_KEY', API_KEY);
-      
-      if (filters.startDate) queryParams.append('startDate', filters.startDate);
-      if (filters.endDate) queryParams.append('endDate', filters.endDate);
-      if (filters.mood) queryParams.append('mood', filters.mood);
-      if (filters.favorites === 'true') queryParams.append('favorites', 'true');
 
-      // Fazer requisição para exportar PDF
-      const exportUrl = `${API_URL}/api/export/pdf?${queryParams.toString()}`;
-      console.log('Exportando PDF:', exportUrl);
-      
-      const exportResponse = await fetch(exportUrl, {
-        method: 'GET',
-        headers: {
-          'x-api-key': API_KEY,
-          'Authorization': `Bearer ${API_KEY}`
-        }
-      });
+      // Tentar diferentes rotas de exportação
+      const possibleUrls = [
+        `${API_URL}/api/export/pdf?${queryParams.toString()}`,
+        `${API_URL}/api/report/pdf?${queryParams.toString()}`,
+        `${API_URL}/api/diary-entries/export?${queryParams.toString()}`,
+        `${API_URL}/export/pdf?${queryParams.toString()}`
+      ];
 
-      if (!exportResponse.ok) {
-        // Tentar formato alternativo
-        const alternativeResponse = await fetch(`${API_URL}/api/export/pdf?${queryParams.toString()}`, {
-          method: 'GET',
-          headers: {
-            'API-KEY': API_KEY
+      let blob = null;
+      let success = false;
+
+      // Tentar cada URL até uma funcionar
+      for (const url of possibleUrls) {
+        try {
+          console.log('Tentando exportar PDF de:', url);
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'x-api-key': API_KEY,
+              'Authorization': `Bearer ${API_KEY}`
+            }
+          });
+
+          if (response.ok) {
+            blob = await response.blob();
+            success = true;
+            console.log('PDF gerado com sucesso!');
+            break;
           }
-        });
-        
-        if (!alternativeResponse.ok) {
-          throw new Error('Erro ao gerar relatório PDF');
+        } catch (err) {
+          console.log(`Falhou em ${url}, tentando próxima...`);
         }
-        
-        const blob = await alternativeResponse.blob();
-        
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        
-        const today = new Date().toISOString().split('T')[0];
-        link.download = `diario-entrepaginas-${today}.pdf`;
-      } else {
-        const blob = await exportResponse.blob();
-        
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        
-        const today = new Date().toISOString().split('T')[0];
-        link.download = `diario-entrepaginas-${today}.pdf`;
       }
-      
+
+      // Se nenhuma URL funcionou, tentar sem autenticação
+      if (!success) {
+        console.log('Tentando sem autenticação...');
+        for (const url of possibleUrls) {
+          try {
+            const response = await fetch(url, {
+              method: 'GET'
+            });
+
+            if (response.ok) {
+              blob = await response.blob();
+              success = true;
+              console.log('PDF gerado com sucesso (sem auth)!');
+              break;
+            }
+          } catch (err) {
+            console.log(`Falhou em ${url}`);
+          }
+        }
+      }
+
+      if (!success || !blob) {
+        throw new Error('Nenhuma rota de exportação PDF disponível no back-end. Verifique se o endpoint /api/export/pdf ou /api/report/pdf existe.');
+      }
+
+      // Fazer download do PDF
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const today = new Date().toISOString().split('T')[0];
+      link.download = `diario-entrepaginas-${today}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+
+      console.log('Download iniciado!');
       
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
-      setError('Erro ao gerar relatório PDF. Verifique se há entradas no período selecionado.');
+      setError(`Erro ao gerar relatório: ${err.message}. Verifique se o back-end está rodando e se há entradas no período selecionado.`);
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatFiltersSummary = () => {
-    const summary = [];
-    
-    if (filters.startDate && filters.endDate) {
-      summary.push(`Período: ${new Date(filters.startDate).toLocaleDateString('pt-BR')} a ${new Date(filters.endDate).toLocaleDateString('pt-BR')}`);
-    } else if (filters.startDate) {
-      summary.push(`A partir de: ${new Date(filters.startDate).toLocaleDateString('pt-BR')}`);
-    } else if (filters.endDate) {
-      summary.push(`Até: ${new Date(filters.endDate).toLocaleDateString('pt-BR')}`);
-    }
-    
-    if (filters.mood) {
-      summary.push(`Humor: ${filters.mood}`);
-    }
-    
-    if (filters.favorites === 'true') {
-      summary.push('Apenas favoritos');
-    }
-    
-    return summary.length > 0 ? summary.join(' • ') : 'Todas as entradas';
   };
 
   return (
@@ -136,53 +111,9 @@ export default function RelatoriosPage() {
             📊 Relatórios
           </h1>
           <p className={styles.subtitle}>
-            Gere relatórios em PDF das suas entradas do diário
+            Gere relatórios em PDF de todas as suas entradas do diário
           </p>
         </div>
-
-        {/* Filtros */}
-        <Card className={styles.filtersCard}>
-          <h3 className={styles.filtersTitle}>Filtros do Relatório</h3>
-          <div className={styles.filtersGrid}>
-            <Input
-              type="date"
-              label="Data início"
-              value={filters.startDate}
-              onChange={(e) => handleFilterChange('startDate', e.target.value)}
-            />
-            <Input
-              type="date"
-              label="Data fim"
-              value={filters.endDate}
-              onChange={(e) => handleFilterChange('endDate', e.target.value)}
-            />
-            <Select
-              label="Humor"
-              value={filters.mood}
-              onChange={(e) => handleFilterChange('mood', e.target.value)}
-            >
-              <option value="">Todos os humores</option>
-              <option value="feliz">😊 Feliz</option>
-              <option value="triste">😢 Triste</option>
-              <option value="ansioso">😰 Ansioso</option>
-              <option value="calmo">😌 Calmo</option>
-              <option value="animado">🤩 Animado</option>
-              <option value="nostálgico">🥺 Nostálgico</option>
-              <option value="reflexivo">🤔 Reflexivo</option>
-            </Select>
-            <Select
-              label="Favoritos"
-              value={filters.favorites}
-              onChange={(e) => handleFilterChange('favorites', e.target.value)}
-            >
-              <option value="">Todos</option>
-              <option value="true">Apenas favoritos</option>
-            </Select>
-          </div>
-          <Button size="sm" onClick={clearFilters}>
-            Limpar filtros
-          </Button>
-        </Card>
 
         {/* Preview do Relatório */}
         <Card className={styles.previewCard}>
@@ -191,9 +122,6 @@ export default function RelatoriosPage() {
             <h4 className={styles.previewHeader}>
               📄 EntrePages - Relatório do Diário
             </h4>
-            <p className={styles.previewMeta}>
-              <strong>Filtros aplicados:</strong> {formatFiltersSummary()}
-            </p>
             <p className={styles.previewMeta}>
               <strong>Data de geração:</strong> {new Date().toLocaleDateString('pt-BR')}
             </p>
@@ -204,7 +132,7 @@ export default function RelatoriosPage() {
             <ul className={styles.infoList}>
               <li>• Estatísticas gerais das entradas</li>
               <li>• Distribuição de humores</li>
-              <li>• Lista completa das entradas (baseada nos filtros)</li>
+              <li>• Lista completa de todas as entradas</li>
               <li>• Conteúdo, tags e informações de cada entrada</li>
               <li>• Referências a fotos anexadas</li>
             </ul>
@@ -256,10 +184,10 @@ export default function RelatoriosPage() {
         <Card className={styles.tipsCard}>
           <h3 className={styles.tipsTitle}>💡 Dicas</h3>
           <ul className={styles.tipsList}>
-            <li>• Use os filtros para personalizar seu relatório</li>
-            <li>• Relatórios incluem estatísticas e todas as entradas do período</li>
+            <li>• O relatório inclui todas as suas entradas do diário</li>
+            <li>• Estatísticas e distribuição de humores são incluídas automaticamente</li>
             <li>• O arquivo PDF será baixado automaticamente</li>
-            <li>• Você pode gerar relatórios de períodos específicos ou de todas as entradas</li>
+            <li>• Certifique-se de que o back-end está rodando para gerar o relatório</li>
           </ul>
         </Card>
       </div>

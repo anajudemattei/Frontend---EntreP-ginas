@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'entre-linhas-2024';
 
 import { mockAPI } from '../app/api/mockData.js';
@@ -19,30 +19,51 @@ class ApiService {
       throw new Error('Using mock data');
     }
 
-    // Adicionar API_KEY como query parameter
-    const url = new URL(`${this.baseURL}${endpoint}`);
-    url.searchParams.append('API_KEY', API_KEY);
-    
-    const config = {
-      headers: this.headers,
-      ...options,
-    };
+    // Tentar múltiplas URLs
+    const possibleBaseUrls = [
+      'http://localhost:4002/api',
+      'http://localhost:4002',
+      'http://localhost:3002/api',
+      'http://localhost:3002',
+    ];
 
-    try {
-      const response = await fetch(url.toString(), config);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    let lastError = null;
+
+    for (const baseUrl of possibleBaseUrls) {
+      try {
+        // Adicionar API_KEY como query parameter
+        const url = new URL(`${baseUrl}${endpoint}`);
+        url.searchParams.append('API_KEY', API_KEY);
+        
+        const config = {
+          headers: {
+            ...this.headers,
+            'Authorization': `Bearer ${API_KEY}`,
+          },
+          ...options,
+        };
+
+        const response = await fetch(url.toString(), config);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          lastError = new Error(errorData.message || `HTTP error! status: ${response.status}`);
+          continue; // Tentar próxima URL
+        }
+
+        // Sucesso! Atualizar baseURL para próximas chamadas
+        this.baseURL = baseUrl;
+        return await response.json();
+      } catch (error) {
+        console.log(`Falhou em ${baseUrl}${endpoint}:`, error.message);
+        lastError = error;
       }
-
-      return await response.json();
-    } catch (error) {
-      console.error('API request failed:', error);
-      // Ativa modo mock para próximas chamadas
-      this.useMockData = true;
-      throw error;
     }
+
+    // Se todas falharam, usar mock
+    console.error('API request failed em todas as URLs:', lastError);
+    this.useMockData = true;
+    throw lastError || new Error('Todas as URLs falharam');
   }
 
   // Entradas do diário
