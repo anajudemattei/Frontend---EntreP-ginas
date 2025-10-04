@@ -39,6 +39,9 @@ export default function Header() {
             <Link href="/relatorios" className="text-foreground hover:text-primary transition-colors">
               Relatórios
             </Link>
+            <Link href="/sobre" className="text-foreground hover:text-primary transition-colors">
+              Sobre Mim
+            </Link>
             <Link href="/perfil" className="text-foreground hover:text-primary transition-colors">
               Perfil
             </Link>
@@ -83,6 +86,9 @@ export default function Header() {
               </Link>
               <Link href="/relatorios" className="text-foreground hover:text-primary transition-colors">
                 Relatórios
+              </Link>
+              <Link href="/sobre" className="text-foreground hover:text-primary transition-colors">
+                Sobre Mim
               </Link>
               <Link href="/perfil" className="text-foreground hover:text-primary transition-colors">
                 Perfil
