@@ -1,26 +1,60 @@
 .container {
   min-height: 100vh;
   background-color: var(--background);
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 2rem;
+  }
 }
 
 .header {
-  background: linear-gradient(to right, var(--primary), var(--primary-80));
-  color: white;
-  padding: 2rem;
+  background: linear-gradient(135deg, white 0%, rgba(248, 187, 217, 0.03) 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 2px 12px rgba(45, 27, 46, 0.08), 0 1px 3px rgba(45, 27, 46, 0.04);
+  border: 1px solid rgba(45, 27, 46, 0.06);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 2rem;
+}
+
+.header:hover {
+  box-shadow: 0 4px 20px rgba(45, 27, 46, 0.12), 0 2px 6px rgba(45, 27, 46, 0.06);
+  transform: translateY(-2px);
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+  border-radius: 0 20px 0 100%;
+  opacity: 0.8;
 }
 
 .headerContent {
-  max-width: 96rem;
+  max-width: 80rem;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
 .title {
   font-size: 2.25rem;
-  font-weight: bold;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
 }
 
 @media (max-width: 768px) {
@@ -30,17 +64,23 @@
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
+  color: var(--muted);
+  font-size: 1.125rem;
 }
 
 .content {
   max-width: 96rem;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .content {
+    padding: 2rem;
+  }
 }
 
 /* Profile Card */
@@ -159,7 +199,6 @@
   font-weight: 600;
 }
 
-/* Grid Layout */
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -172,7 +211,6 @@
   }
 }
 
-/* Skills Card */
 .skillsCard {
   background: white;
   padding: 2rem;
@@ -235,7 +273,6 @@
   transform: translateY(-2px);
 }
 
-/* Photo Gallery */
 .photoGallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -300,7 +337,6 @@
   margin: 0;
 }
 
-/* Goals Card */
 .goalsCard {
   background: white;
   padding: 2rem;
@@ -345,7 +381,6 @@
   line-height: 1.6;
 }
 
-/* Contact Card */
 .contactCard {
   background: white;
   padding: 2rem;
@@ -392,7 +427,6 @@
   font-size: 1.2rem;
 }
 
-/* Quote */
 .quote {
   background: linear-gradient(135deg, var(--primary-20), var(--secondary-20));
   padding: 3rem 2rem;
@@ -426,7 +460,6 @@
   font-style: normal;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .header {
     padding: 1.5rem 1rem;

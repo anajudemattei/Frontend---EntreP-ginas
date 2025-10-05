@@ -23,7 +23,6 @@ export default function FavoritosPage() {
     setError(null);
 
     try {
-      // Buscar entradas favoritas
       const favoritesUrl = `${API_URL}/api/diary-entries/favorites?API_KEY=${API_KEY}`;
       console.log('Fazendo requisição para favoritos:', favoritesUrl);
       
@@ -38,7 +37,6 @@ export default function FavoritosPage() {
       console.log('Status da resposta favoritos:', favoritesResponse.status);
       
       if (!favoritesResponse.ok) {
-        // Tentar formato alternativo se o primeiro falhar
         console.log('Tentando formato alternativo...');
         const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/favorites`, {
           headers: {
@@ -58,7 +56,6 @@ export default function FavoritosPage() {
         const favoritesData = await favoritesResponse.json();
         console.log('Resposta da API:', favoritesData);
         
-        // A API retorna os dados no campo 'data'
         setFavorites(favoritesData.data || favoritesData || []);
       }
     } catch (err) {
@@ -84,7 +81,6 @@ export default function FavoritosPage() {
       });
 
       if (!toggleResponse.ok) {
-        // Tentar formato alternativo
         const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${id}/favorite`, {
           method: 'PATCH',
           headers: {
@@ -97,8 +93,6 @@ export default function FavoritosPage() {
           throw new Error('Erro ao remover favorito');
         }
       }
-
-      // Remove da lista local
       setFavorites(prev => prev.filter(entry => entry.id !== id));
     } catch (err) {
       console.error('Erro ao remover favorito:', err);
@@ -132,7 +126,6 @@ export default function FavoritosPage() {
   return (
     <Layout>
       <div className={styles.container}>
-        {/* Header */}
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>
@@ -144,7 +137,6 @@ export default function FavoritosPage() {
           </div>
         </div>
 
-        {/* Conteúdo */}
         {loading ? (
           <div className={styles.loadingState}>
             <LoadingSpinner size="lg" />

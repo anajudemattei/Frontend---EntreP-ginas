@@ -41,7 +41,6 @@ export default function PerfilPage() {
   const [message, setMessage] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
-  // Buscar estatísticas reais ao carregar a página
   useEffect(() => {
     fetchRealStats();
   }, []);
@@ -50,7 +49,6 @@ export default function PerfilPage() {
     try {
       setLoadingStats(true);
       
-      // Tentar buscar todas as entradas
       const possibleUrls = [
         `${API_BASE_URL}/api/diary-entries`,
         `${API_BASE_URL}/diary-entries`,
@@ -97,23 +95,18 @@ export default function PerfilPage() {
   };
 
   const calculateStats = (entries) => {
-    // Total de entradas
     const totalEntries = entries.length;
 
-    // Total de favoritas
     const totalFavorites = entries.filter(entry => entry.is_favorite || entry.isFavorite).length;
 
-    // Total de palavras
     const totalWords = entries.reduce((sum, entry) => {
       const content = entry.content || '';
       const words = content.trim().split(/\s+/).filter(word => word.length > 0);
       return sum + words.length;
     }, 0);
 
-    // Calcular sequências (streaks)
     const { currentStreak, longestStreak } = calculateStreaks(entries);
 
-    // Data da primeira entrada (join date)
     const dates = entries
       .map(entry => new Date(entry.created_at || entry.createdAt || entry.date))
       .filter(date => !isNaN(date.getTime()))
@@ -138,7 +131,6 @@ export default function PerfilPage() {
       return { currentStreak: 0, longestStreak: 0 };
     }
 
-    // Ordenar entradas por data
     const sortedEntries = [...entries]
       .map(entry => ({
         ...entry,
@@ -151,12 +143,10 @@ export default function PerfilPage() {
       return { currentStreak: 0, longestStreak: 0 };
     }
 
-    // Obter datas únicas (apenas dia, ignorando hora)
     const uniqueDates = [...new Set(
       sortedEntries.map(entry => entry.date.toISOString().split('T')[0])
     )].sort().reverse();
 
-    // Calcular streak atual
     let currentStreak = 0;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -176,7 +166,6 @@ export default function PerfilPage() {
       }
     }
 
-    // Calcular maior streak
     let longestStreak = 0;
     let tempStreak = 1;
 

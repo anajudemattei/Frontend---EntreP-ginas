@@ -22,9 +22,7 @@ export default function HomePage() {
       setError(null);
 
       try {
-        // Buscar entradas recentes
         const entriesUrl = `${API_URL}/api/diary-entries?API_KEY=${API_KEY}`;
-        console.log('Fazendo requisição para:', entriesUrl);
         
         const entriesResponse = await fetch(entriesUrl, {
           headers: {
@@ -33,12 +31,8 @@ export default function HomePage() {
             'Authorization': `Bearer ${API_KEY}`
           }
         });
-
-        console.log('Status da resposta:', entriesResponse.status);
         
         if (!entriesResponse.ok) {
-          // Tentar formato alternativo se o primeiro falhar
-          console.log('Tentando formato alternativo...');
           const alternativeResponse = await fetch(`${API_URL}/diary-entries`, {
             headers: {
               'Content-Type': 'application/json',
@@ -47,28 +41,20 @@ export default function HomePage() {
           });
           
           if (!alternativeResponse.ok) {
-            throw new Error(`Erro ao buscar entradas: ${entriesResponse.status} - ${alternativeResponse.status}`);
+            throw new Error(`Erro ao buscar entradas: ${entriesResponse.status}`);
           }
           
           const entriesData = await alternativeResponse.json();
-          console.log('Resposta da API (alternativa):', entriesData);
-          
-          // Pegar apenas as 5 últimas entradas
           const allEntries = entriesData.data || [];
           const last5Entries = allEntries.slice(0, 5);
           setRecentEntries(last5Entries);
         } else {
           const entriesData = await entriesResponse.json();
-          console.log('Resposta da API:', entriesData);
-          
-          // A API retorna os dados no campo 'data'
-          // Pegar apenas as 5 últimas entradas
           const allEntries = entriesData.data || [];
           const last5Entries = allEntries.slice(0, 5);
           setRecentEntries(last5Entries);
         }
 
-        // Buscar estatísticas (se disponível)
         try {
           const statsUrl = `${API_URL}/stats?API_KEY=${API_KEY}`;
           const statsResponse = await fetch(statsUrl, {
@@ -82,12 +68,9 @@ export default function HomePage() {
             setStats(statsData);
           }
         } catch (statsError) {
-          console.log('Estatísticas não disponíveis:', statsError.message);
-          // Não definir erro, pois as entradas são mais importantes
         }
       } catch (err) {
         setError(err.message);
-        console.error('Erro ao carregar dados:', err);
       } finally {
         setLoading(false);
       }
@@ -174,7 +157,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Estatísticas */}
           {stats && (
             <div className={styles.statsGrid}>
               <Card className={styles.statCard}>
@@ -212,7 +194,6 @@ export default function HomePage() {
           )}
 
           <div className={styles.mainGrid}>
-            {/* Entradas Recentes */}
             <div className={styles.recentSection}>
               <h2 className={styles.sectionTitle}>
                 📚 Entradas Recentes
@@ -281,9 +262,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className={styles.sidebar}>
-              {/* Ações Rápidas */}
               <Card className={styles.quickActionsCard}>
                 <h3 className={styles.sectionTitle}>
                   ⚡ Ações Rápidas
@@ -308,7 +287,6 @@ export default function HomePage() {
                 </div>
               </Card>
 
-              {/* Sequência de Dias */}
               <Card className={styles.streakCard}>
                 <h3 className={styles.streakTitle}>
                   🔥 Sequência
@@ -321,7 +299,6 @@ export default function HomePage() {
                 </div>
               </Card>
 
-              {/* Inspiração do Dia */}
               <Card className={styles.inspirationCard}>
                 <h3 className={styles.inspirationTitle}>
                   💡 Inspiração

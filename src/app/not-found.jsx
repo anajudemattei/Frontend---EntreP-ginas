@@ -70,7 +70,6 @@ export default function NotFound() {
           />
         </div>
 
-        {/* Número 404 estilizado */}
         <div style={{
           fontSize: '4rem',
           fontWeight: 'bold',
@@ -84,7 +83,6 @@ export default function NotFound() {
           404
         </div>
         
-        {/* Título */}
         <h1 style={{ 
           fontSize: '1.5rem', 
           fontWeight: 'bold', 
@@ -94,7 +92,6 @@ export default function NotFound() {
           Página não encontrada
         </h1>
         
-        {/* Descrição */}
         <p style={{ 
           color: 'var(--muted)', 
           fontSize: '1rem', 
@@ -105,7 +102,6 @@ export default function NotFound() {
           Que tal voltarmos ao início da sua história?
         </p>
         
-        {/* Botões de ação */}
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column', 
@@ -171,7 +167,6 @@ export default function NotFound() {
           </Link>
         </div>
 
-        {/* Mensagem motivacional */}
         <p style={{ 
           color: 'var(--muted)', 
           fontSize: '0.875rem',

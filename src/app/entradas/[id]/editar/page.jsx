@@ -232,7 +232,6 @@ export default function EditarEntradaPage({ params }) {
               placeholder="família, trabalho, viagem, reflexão..."
             />
 
-            {/* Preview das tags */}
             {formData.tags && (
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-foreground">
@@ -252,7 +251,6 @@ export default function EditarEntradaPage({ params }) {
               </div>
             )}
 
-            {/* Preview do humor */}
             {formData.mood && (
               <div className="p-4 bg-secondary/10 rounded-lg">
                 <p className="text-sm text-secondary">
@@ -261,7 +259,6 @@ export default function EditarEntradaPage({ params }) {
               </div>
             )}
 
-            {/* Informações sobre a foto */}
             {originalEntry?.photo && (
               <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
                 <h4 className="font-medium text-info mb-2">📷 Foto atual</h4>

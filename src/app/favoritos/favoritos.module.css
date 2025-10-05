@@ -11,20 +11,39 @@
 }
 
 .header {
-  background: linear-gradient(to right, var(--secondary), rgba(var(--secondary-rgb), 0.8));
-  color: white;
-  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, white 0%, rgba(248, 187, 217, 0.03) 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 2px 12px rgba(45, 27, 46, 0.08), 0 1px 3px rgba(45, 27, 46, 0.04);
+  border: 1px solid rgba(45, 27, 46, 0.06);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 2rem;
 }
 
-@media (min-width: 768px) {
-  .header {
-    padding: 2rem;
-  }
+.header:hover {
+  box-shadow: 0 4px 20px rgba(45, 27, 46, 0.12), 0 2px 6px rgba(45, 27, 46, 0.06);
+  transform: translateY(-2px);
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+  border-radius: 0 20px 0 100%;
+  opacity: 0.8;
 }
 
 .headerContent {
   max-width: 80rem;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
 .headerInfo {
@@ -36,10 +55,13 @@
 
 .title {
   font-size: 1.875rem;
-  font-weight: bold;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  letter-spacing: -0.02em;
+  text-shadow: none;
+  color: var(--foreground);
 }
 
 @media (min-width: 768px) {
@@ -49,8 +71,9 @@
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--muted);
   margin-top: 0.5rem;
+  font-size: 1.125rem;
 }
 
 .content {
@@ -66,12 +89,14 @@
 }
 
 .statsCard {
-  background: linear-gradient(135deg, var(--secondary) 0%, rgba(var(--secondary-rgb), 0.8) 100%);
-  color: white;
+  background: white;
+  color: var(--foreground);
   padding: 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: 12px;
   margin-bottom: 2rem;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(45, 27, 46, 0.08);
+  border: 1px solid rgba(248, 187, 217, 0.15);
 }
 
 .statsTitle {
@@ -289,13 +314,14 @@
 .favoriteActions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.2s;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
-.favoriteCard:hover .favoriteActions {
-  opacity: 1;
+.favoriteActionsLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .actionButton {
@@ -393,8 +419,8 @@
 }
 
 .paginationButtonActive {
-  background-color: var(--color-yellow-200); /* Mesmo tom da header */
-  color: var(--color-gray-700); /* Mesmo tom da header */
+  background-color: var(--color-yellow-200); 
+  color: var(--color-gray-700); 
   border-color: var(--color-yellow-200);
 }
 

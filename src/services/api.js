@@ -14,12 +14,10 @@ class ApiService {
   }
 
   async request(endpoint, options = {}) {
-    // Se já estamos usando mock data, não tente a API real
     if (this.useMockData) {
       throw new Error('Using mock data');
     }
 
-    // Tentar múltiplas URLs
     const possibleBaseUrls = [
       'http://localhost:4002/api',
       'http://localhost:4002',
@@ -31,7 +29,6 @@ class ApiService {
 
     for (const baseUrl of possibleBaseUrls) {
       try {
-        // Adicionar API_KEY como query parameter
         const url = new URL(`${baseUrl}${endpoint}`);
         url.searchParams.append('API_KEY', API_KEY);
         
@@ -48,10 +45,9 @@ class ApiService {
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           lastError = new Error(errorData.message || `HTTP error! status: ${response.status}`);
-          continue; // Tentar próxima URL
+          continue; 
         }
 
-        // Sucesso! Atualizar baseURL para próximas chamadas
         this.baseURL = baseUrl;
         return await response.json();
       } catch (error) {
@@ -60,13 +56,11 @@ class ApiService {
       }
     }
 
-    // Se todas falharam, usar mock
     console.error('API request failed em todas as URLs:', lastError);
     this.useMockData = true;
     throw lastError || new Error('Todas as URLs falharam');
   }
 
-  // Entradas do diário
   async getDiaryEntries(filters = {}) {
     try {
       const queryParams = new URLSearchParams();
@@ -110,12 +104,10 @@ class ApiService {
 
   async createDiaryEntryWithPhoto(formData) {
     try {
-      // Se já estamos usando mock data, pule para o mock
       if (this.useMockData) {
         throw new Error('Using mock data');
       }
 
-      // Adicionar API_KEY como query parameter
       const url = new URL(`${this.baseURL}/diary-entries`);
       url.searchParams.append('API_KEY', API_KEY);
       
@@ -132,7 +124,6 @@ class ApiService {
       return await response.json();
     } catch (error) {
       console.log('Usando dados simulados para criar entrada com foto...');
-      // Converte FormData para objeto para mock
       const data = {};
       for (let [key, value] of formData.entries()) {
         data[key] = value;
@@ -202,7 +193,6 @@ class ApiService {
     }
   }
 
-  // Relatórios
   async exportDiaryToPDF(filters = {}) {
     const queryParams = new URLSearchParams();
     
@@ -212,7 +202,6 @@ class ApiService {
       }
     });
 
-    // Adicionar API_KEY
     queryParams.append('API_KEY', API_KEY);
     
     const url = new URL(`${this.baseURL}/report/pdf`);

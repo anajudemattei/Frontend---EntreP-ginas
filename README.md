@@ -355,7 +355,38 @@ Frontend---EntreP-ginas/
 
 ## 🧪 Testes
 
-### Configuração de Testes
+Este projeto inclui testes automatizados para garantir a qualidade e funcionamento correto da aplicação.
+
+### 📁 Arquivos de Teste
+
+O projeto possui dois tipos principais de testes na pasta `__tests__/`:
+
+#### **1. Teste Unitário** - `__tests__/components/ui.test.jsx`
+Testa os componentes básicos da interface:
+- **Button**: Verifica se o botão renderiza e responde a cliques
+- **Card**: Testa se o card mostra o conteúdo corretamente
+- **Input**: Verifica se o input aceita texto digitado
+- **Badge**: Testa a renderização de badges
+- **LoadingSpinner**: Verifica o componente de loading
+
+#### **2. Teste de Integração** - `__tests__/services/api.test.js`
+Testa a comunicação com a API:
+- Buscar lista de entradas do diário
+- Criar nova entrada com validação
+- Buscar entrada específica por ID
+- Filtrar entradas por humor e tags
+- Tratamento de erros da API
+- Fallback para dados mock quando necessário
+
+### 🚀 Como Executar os Testes
+
+```bash
+npm test              # Executar todos os testes
+npm test -- --watch   # Modo watch (observa mudanças)
+npm test -- --coverage # Com cobertura de código
+```
+
+### ⚙️ Configuração de Testes
 
 O projeto está preparado para testes com Jest e React Testing Library. Para adicionar testes:
 
@@ -383,17 +414,27 @@ const customJestConfig = {
 module.exports = createJestConfig(customJestConfig)
 ```
 
-### Executar Testes
+### 📊 O que os Testes Verificam
 
-```bash
-npm test              # Executar todos os testes
-npm test -- --watch   # Modo watch
-npm test -- --coverage # Com cobertura
-```
+#### ✅ Testes Unitários (Componentes UI):
+- Botões aparecem na tela com o texto correto
+- Cliques nos botões executam as funções esperadas
+- Cards renderizam e mostram o conteúdo adequadamente
+- Inputs permitem digitação e atualização de valor
+- Labels aparecem corretamente vinculados aos campos
+- Estados de loading são exibidos apropriadamente
 
-### Exemplos de Testes
+#### ✅ Testes de Integração (API Service):
+- API retorna lista de entradas corretamente
+- Sistema consegue criar novas entradas com sucesso
+- Busca de entradas específicas por ID funciona
+- Filtros funcionam corretamente (humor, tags, favoritos)
+- Sistema usa dados mock quando API está indisponível
+- Erros são tratados e retornados adequadamente
 
-#### **Teste Unitário - Componente UI**
+### 📝 Exemplos de Testes
+
+#### **Teste Unitário - Componente Button**
 ```javascript
 // __tests__/components/ui/Button.test.jsx
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -411,42 +452,124 @@ describe('Button Component', () => {
     fireEvent.click(screen.getByText('Click'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
+
+  test('desabilita o botão quando disabled é true', () => {
+    render(<Button disabled>Disabled</Button>);
+    expect(screen.getByText('Disabled')).toBeDisabled();
+  });
 });
 ```
 
-#### **Teste de Integração - Service API**
+#### **Teste de Integração - API Service**
 ```javascript
 // __tests__/services/api.test.js
 import ApiService from '@/services/api';
 
-describe('API Service', () => {
-  test('busca entradas com sucesso', async () => {
+describe('API Service - Diary Entries', () => {
+  test('busca entradas do diário com sucesso', async () => {
     const api = new ApiService();
     const entries = await api.getDiaryEntries();
+    
     expect(Array.isArray(entries)).toBe(true);
+    expect(entries.length).toBeGreaterThan(0);
   });
 
-  test('cria nova entrada', async () => {
+  test('cria nova entrada com dados válidos', async () => {
     const api = new ApiService();
     const newEntry = {
-      title: 'Teste',
-      content: 'Conteúdo de teste',
+      title: 'Teste de Entrada',
+      content: 'Conteúdo de teste para verificar criação',
       mood: 'feliz',
-      tags: ['teste']
+      tags: ['teste', 'automação']
     };
+    
     const result = await api.createDiaryEntry(newEntry);
+    
     expect(result).toHaveProperty('id');
-    expect(result.title).toBe('Teste');
+    expect(result.title).toBe('Teste de Entrada');
+    expect(result.mood).toBe('feliz');
+  });
+
+  test('filtra entradas por humor', async () => {
+    const api = new ApiService();
+    const entries = await api.getDiaryEntries({ mood: 'feliz' });
+    
+    entries.forEach(entry => {
+      expect(entry.mood).toBe('feliz');
+    });
+  });
+
+  test('trata erro quando entrada não é encontrada', async () => {
+    const api = new ApiService();
+    
+    await expect(
+      api.getDiaryEntry('id-inexistente')
+    ).rejects.toThrow('Entrada não encontrada');
   });
 });
 ```
 
-### Cobertura de Testes
+### 🎯 Resultado Esperado dos Testes
 
-O projeto deve ter cobertura mínima de:
+Quando você executar `npm test`, verá algo assim:
+
+```
+PASS  __tests__/components/ui.test.jsx
+  Button Component
+    ✓ renderiza o botão com texto (25ms)
+    ✓ chama onClick quando clicado (15ms)
+    ✓ desabilita o botão quando disabled é true (10ms)
+  Card Component
+    ✓ renderiza card com conteúdo (18ms)
+  Input Component
+    ✓ aceita texto digitado (22ms)
+
+PASS  __tests__/services/api.test.js
+  API Service - Diary Entries
+    ✓ busca entradas do diário com sucesso (45ms)
+    ✓ cria nova entrada com dados válidos (38ms)
+    ✓ filtra entradas por humor (42ms)
+    ✓ trata erro quando entrada não é encontrada (20ms)
+
+Test Suites: 2 passed, 2 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        2.345s
+```
+
+### 📈 Cobertura de Testes
+
+O projeto deve manter cobertura mínima de:
 - **Componentes UI**: 80%
-- **Services**: 70%
+- **Services (API)**: 70%
 - **Pages críticas**: 60%
+- **Utilitários**: 75%
+
+### 🔧 Tecnologias de Teste
+
+- **Jest** - Framework de testes JavaScript
+- **React Testing Library** - Biblioteca para testar componentes React
+- **@testing-library/jest-dom** - Matchers customizados para testes de DOM
+- **jest-environment-jsdom** - Ambiente DOM para testes
+
+### 💡 Boas Práticas de Teste
+
+1. **Sempre rode os testes antes de fazer commit**
+2. **Escreva testes para novas funcionalidades**
+3. **Mantenha os testes simples e legíveis**
+4. **Teste comportamentos, não implementações**
+5. **Use nomes descritivos para os testes**
+6. **Mantenha a cobertura acima dos níveis mínimos**
+7. **Teste casos de sucesso E casos de erro**
+
+### 🐛 Depuração de Testes
+
+Se um teste falhar:
+1. Leia a mensagem de erro com atenção
+2. Verifique se a API está rodando (para testes de integração)
+3. Use `console.log()` dentro dos testes para debug
+4. Execute apenas o teste que falhou: `npm test -- nome-do-teste`
+5. Verifique se as dependências estão atualizadas
 
 ## 🎯 Comandos Disponíveis
 

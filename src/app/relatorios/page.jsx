@@ -16,12 +16,9 @@ export default function RelatoriosPage() {
     try {
       setLoading(true);
       setError(null);
-
-      // Construir query params apenas com API_KEY
       const queryParams = new URLSearchParams();
       queryParams.append('API_KEY', API_KEY);
 
-      // Tentar diferentes rotas de exportação
       const possibleUrls = [
         `${API_URL}/api/export/pdf?${queryParams.toString()}`,
         `${API_URL}/api/report/pdf?${queryParams.toString()}`,
@@ -32,7 +29,6 @@ export default function RelatoriosPage() {
       let blob = null;
       let success = false;
 
-      // Tentar cada URL até uma funcionar
       for (const url of possibleUrls) {
         try {
           console.log('Tentando exportar PDF de:', url);
@@ -56,7 +52,6 @@ export default function RelatoriosPage() {
         }
       }
 
-      // Se nenhuma URL funcionou, tentar sem autenticação
       if (!success) {
         console.log('Tentando sem autenticação...');
         for (const url of possibleUrls) {
@@ -81,7 +76,6 @@ export default function RelatoriosPage() {
         throw new Error('Nenhuma rota de exportação PDF disponível no back-end. Verifique se o endpoint /api/export/pdf ou /api/report/pdf existe.');
       }
 
-      // Fazer download do PDF
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -105,7 +99,6 @@ export default function RelatoriosPage() {
   return (
     <Layout>
       <div className={styles.container}>
-        {/* Header */}
         <div className={styles.header}>
           <h1 className={styles.title}>
             📊 Relatórios
@@ -115,7 +108,6 @@ export default function RelatoriosPage() {
           </p>
         </div>
 
-        {/* Preview do Relatório */}
         <Card className={styles.previewCard}>
           <h3 className={styles.previewTitle}>Preview do Relatório</h3>
           <div className={styles.previewContent}>
@@ -139,7 +131,6 @@ export default function RelatoriosPage() {
           </div>
         </Card>
 
-        {/* Ações */}
         <Card className={styles.actionsCard}>
           <div className={styles.actionsContent}>
             <div>
@@ -180,7 +171,6 @@ export default function RelatoriosPage() {
           </Card>
         )}
 
-        {/* Informações adicionais */}
         <Card className={styles.tipsCard}>
           <h3 className={styles.tipsTitle}>💡 Dicas</h3>
           <ul className={styles.tipsList}>

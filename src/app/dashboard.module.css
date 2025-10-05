@@ -15,13 +15,19 @@
 }
 
 .welcomeCard {
-  background: white;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 8px 25px rgba(45, 27, 46, 0.15);
-  border: 1px solid rgba(45, 27, 46, 0.1);
+  background: linear-gradient(135deg, white 0%, rgba(248, 187, 217, 0.03) 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 2px 12px rgba(45, 27, 46, 0.08), 0 1px 3px rgba(45, 27, 46, 0.04);
+  border: 1px solid rgba(45, 27, 46, 0.06);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.welcomeCard:hover {
+  box-shadow: 0 4px 20px rgba(45, 27, 46, 0.12), 0 2px 6px rgba(45, 27, 46, 0.06);
+  transform: translateY(-2px);
 }
 
 .welcomeContent {
@@ -110,31 +116,39 @@
 }
 
 .statCard {
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(248, 187, 217, 0.15);
 }
 
 .statCard:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(45, 27, 46, 0.12);
+  border-color: rgba(248, 187, 217, 0.25);
 }
 
 .statIcon {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .statValue {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #F8BBD9 !important; /* Forçar cor rosa em todos os números */
-  margin-bottom: 0.25rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #F8BBD9 !important;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .statLabel {
   color: var(--muted);
   font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
 }
 
 .mainGrid {
@@ -157,17 +171,18 @@
 
 .sectionTitle {
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--foreground);
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  letter-spacing: -0.02em;
 }
 
 .entriesGrid {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 @media (min-width: 768px) {
@@ -183,16 +198,20 @@
 }
 
 .entryCard {
-  padding: 1.5rem;
-  border-left: 4px solid var(--primary);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 1.75rem;
+  border-left: 3px solid var(--primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .entryCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(139, 90, 60, 0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(45, 27, 46, 0.12);
   border-left-color: var(--secondary);
+  border-left-width: 4px;
 }
 
 .entryHeader {
