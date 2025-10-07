@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
 import Layout from '../../components/Layout';
 import { Card, Button, Input, Select, LoadingSpinner } from '../../components/ui';
 import styles from './relatorios.module.css';
@@ -32,21 +33,17 @@ export default function RelatoriosPage() {
       for (const url of possibleUrls) {
         try {
           console.log('Tentando exportar PDF de:', url);
-          
-          const response = await fetch(url, {
-            method: 'GET',
+          const response = await axios.get(url, {
             headers: {
               'x-api-key': API_KEY,
               'Authorization': `Bearer ${API_KEY}`
-            }
+            },
+            responseType: 'blob'
           });
-
-          if (response.ok) {
-            blob = await response.blob();
-            success = true;
-            console.log('PDF gerado com sucesso!');
-            break;
-          }
+          blob = response.data;
+          success = true;
+          console.log('PDF gerado com sucesso!');
+          break;
         } catch (err) {
           console.log(`Falhou em ${url}, tentando próxima...`);
         }
@@ -56,16 +53,11 @@ export default function RelatoriosPage() {
         console.log('Tentando sem autenticação...');
         for (const url of possibleUrls) {
           try {
-            const response = await fetch(url, {
-              method: 'GET'
-            });
-
-            if (response.ok) {
-              blob = await response.blob();
-              success = true;
-              console.log('PDF gerado com sucesso (sem auth)!');
-              break;
-            }
+            const response = await axios.get(url, { responseType: 'blob' });
+            blob = response.data;
+            success = true;
+            console.log('PDF gerado com sucesso (sem auth)!');
+            break;
           } catch (err) {
             console.log(`Falhou em ${url}`);
           }

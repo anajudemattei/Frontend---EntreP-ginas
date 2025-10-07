@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import Layout from '../../components/Layout';
 import { Card, Button, Badge, LoadingSpinner, Input, Select } from '../../components/ui';
 import Link from 'next/link';
@@ -45,39 +46,28 @@ export default function EntradasPage() {
       const entriesUrl = `${API_URL}/api/diary-entries?${queryParams.toString()}`;
       console.log('Fazendo requisição para entradas:', entriesUrl);
       
-      const entriesResponse = await fetch(entriesUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-          'Authorization': `Bearer ${API_KEY}`
-        }
-      });
-
-      console.log('Status da resposta entradas:', entriesResponse.status);
-      
-      if (!entriesResponse.ok) {
-        // Tentar formato alternativo se o primeiro falhar
-        console.log('Tentando formato alternativo...');
-        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries?${queryParams.toString()}`, {
+      try {
+        const { data: entriesData } = await axios.get(entriesUrl, {
           headers: {
             'Content-Type': 'application/json',
-            'API-KEY': API_KEY
+            'x-api-key': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
           }
         });
-        
-        if (!alternativeResponse.ok) {
-          throw new Error(`Erro ao buscar entradas: ${entriesResponse.status} - ${alternativeResponse.status}`);
+        setEntries(entriesData.data || entriesData || []);
+      } catch (err1) {
+        // Tentar formato alternativo se o primeiro falhar
+        try {
+          const { data: entriesData } = await axios.get(`${API_URL}/api/diary-entries?${queryParams.toString()}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'API-KEY': API_KEY
+            }
+          });
+          setEntries(entriesData.data || entriesData || []);
+        } catch (err2) {
+          throw new Error(`Erro ao buscar entradas: ${err1?.response?.status || ''} - ${err2?.response?.status || ''}`);
         }
-        
-        const entriesData = await alternativeResponse.json();
-        console.log('Resposta da API (alternativa):', entriesData);
-        setEntries(entriesData.data || entriesData || []);
-      } else {
-        const entriesData = await entriesResponse.json();
-        console.log('Resposta da API:', entriesData);
-        
-        // A API retorna os dados no campo 'data'
-        setEntries(entriesData.data || entriesData || []);
       }
     } catch (err) {
       setError(err.message);

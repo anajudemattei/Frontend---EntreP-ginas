@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../components/Layout';
 import { Card, Button, Badge, LoadingSpinner } from '../../../components/ui';
@@ -30,31 +31,27 @@ export default function EntradaPage({ params }) {
     try {
       const entryUrl = `${API_URL}/api/diary-entries/${resolvedParams.id}?API_KEY=${API_KEY}`;
       
-      const entryResponse = await fetch(entryUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY,
-          'Authorization': `Bearer ${API_KEY}`
-        }
-      });
-      
-      if (!entryResponse.ok) {
-        const alternativeResponse = await fetch(`${API_URL}/api/diary-entries/${resolvedParams.id}`, {
+      try {
+        const { data: entryData } = await axios.get(entryUrl, {
           headers: {
             'Content-Type': 'application/json',
-            'API-KEY': API_KEY
+            'x-api-key': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
           }
         });
-        
-        if (!alternativeResponse.ok) {
-          throw new Error(`Entrada não encontrada: ${entryResponse.status}`);
+        setEntry(entryData.data || entryData);
+      } catch (err1) {
+        try {
+          const { data: entryData } = await axios.get(`${API_URL}/api/diary-entries/${resolvedParams.id}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'API-KEY': API_KEY
+            }
+          });
+          setEntry(entryData.data || entryData);
+        } catch (err2) {
+          throw new Error(`Entrada não encontrada: ${err1?.response?.status || ''}`);
         }
-        
-        const entryData = await alternativeResponse.json();
-        setEntry(entryData.data || entryData);
-      } else {
-        const entryData = await entryResponse.json();
-        setEntry(entryData.data || entryData);
       }
     } catch (err) {
       setError(err.message);

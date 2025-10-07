@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../../components/Layout';
 import { Card, Button, Input, Textarea, Select, Badge, LoadingSpinner } from '../../../../components/ui';
-import apiService from '../../../../services/api';
+import axios from 'axios';
 
 export default function EditarEntradaPage({ params }) {
   const router = useRouter();
@@ -33,17 +33,36 @@ export default function EditarEntradaPage({ params }) {
       setLoading(true);
       setError(null);
       
-      const response = await apiService.getDiaryEntry(resolvedParams.id);
-      const entry = response.data;
-      
-      setOriginalEntry(entry);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+      const API_KEY = 'entre-linhas-2024';
+      const entryUrl = `${API_URL}/api/diary-entries/${resolvedParams.id}?API_KEY=${API_KEY}`;
+      let entryData;
+      try {
+        const { data } = await axios.get(entryUrl, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          }
+        });
+        entryData = data.data || data;
+      } catch (err1) {
+        const { data } = await axios.get(`${API_URL}/api/diary-entries/${resolvedParams.id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+        entryData = data.data || data;
+      }
+      setOriginalEntry(entryData);
       setFormData({
-        title: entry.title || '',
-        content: entry.content || '',
-        entryDate: entry.entry_date ? entry.entry_date.split('T')[0] : '',
-        mood: entry.mood || '',
-        tags: entry.tags ? entry.tags.join(', ') : '',
-        isFavorite: entry.is_favorite || false
+        title: entryData.title || '',
+        content: entryData.content || '',
+        entryDate: entryData.entry_date ? entryData.entry_date.split('T')[0] : '',
+        mood: entryData.mood || '',
+        tags: entryData.tags ? entryData.tags.join(', ') : '',
+        isFavorite: entryData.is_favorite || false
       });
     } catch (err) {
       console.error('Erro ao carregar entrada:', err);
@@ -77,14 +96,39 @@ export default function EditarEntradaPage({ params }) {
         ? formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
         : [];
 
-      await apiService.updateDiaryEntry(resolvedParams.id, {
-        title: formData.title,
-        content: formData.content,
-        entryDate: formData.entryDate,
-        mood: formData.mood,
-        tags: tagsArray,
-        isFavorite: formData.isFavorite
-      });
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002';
+      const API_KEY = 'entre-linhas-2024';
+      const updateUrl = `${API_URL}/api/diary-entries/${resolvedParams.id}?API_KEY=${API_KEY}`;
+      try {
+        await axios.put(updateUrl, {
+          title: formData.title,
+          content: formData.content,
+          entryDate: formData.entryDate,
+          mood: formData.mood,
+          tags: tagsArray,
+          isFavorite: formData.isFavorite
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY,
+            'Authorization': `Bearer ${API_KEY}`
+          }
+        });
+      } catch (err1) {
+        await axios.put(`${API_URL}/api/diary-entries/${resolvedParams.id}`, {
+          title: formData.title,
+          content: formData.content,
+          entryDate: formData.entryDate,
+          mood: formData.mood,
+          tags: tagsArray,
+          isFavorite: formData.isFavorite
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'API-KEY': API_KEY
+          }
+        });
+      }
 
       router.push(`/entradas/${params.id}`);
     } catch (err) {

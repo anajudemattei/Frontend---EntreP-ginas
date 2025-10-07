@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../components/Layout';
 import { Card, Button, Input, Textarea, Select, Badge } from '../../../components/ui';
@@ -80,33 +81,21 @@ export default function NovaEntradaPage() {
         for (const url of urls) {
           try {
             console.log(`Tentando URL: ${url}`);
-            
-            const response = await fetch(url, {
-              method: 'POST',
+            await axios.post(url, formDataWithPhoto, {
               headers: {
                 'x-api-key': API_KEY,
-                'Authorization': `Bearer ${API_KEY}`
-              },
-              body: formDataWithPhoto
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'multipart/form-data'
+              }
             });
-
-            console.log(`Resposta status: ${response.status}`);
-
-            if (response.ok) {
-              success = true;
-              console.log('✅ Entrada criada com sucesso!');
-              break;
-            } else {
-              const errorText = await response.text();
-              console.error(`❌ Erro na resposta: ${errorText}`);
-              lastError = errorText;
-            }
+            success = true;
+            console.log('✅ Entrada criada com sucesso!');
+            break;
           } catch (err) {
             console.error(`❌ Erro ao tentar ${url}:`, err.message);
             lastError = err.message;
           }
         }
-
         if (!success) {
           throw new Error(`Back-end não disponível. Erro: ${lastError || 'Verifique se está rodando na porta 4002'}`);
         }
@@ -139,34 +128,21 @@ export default function NovaEntradaPage() {
         for (const url of urls) {
           try {
             console.log(`Tentando URL: ${url}`);
-            
-            const response = await fetch(url, {
-              method: 'POST',
+            await axios.post(url, entryData, {
               headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': API_KEY,
                 'Authorization': `Bearer ${API_KEY}`
-              },
-              body: JSON.stringify(entryData)
+              }
             });
-
-            console.log(`Resposta status: ${response.status}`);
-
-            if (response.ok) {
-              success = true;
-              console.log('✅ Entrada criada com sucesso!');
-              break;
-            } else {
-              const errorText = await response.text();
-              console.error(`❌ Erro na resposta: ${errorText}`);
-              lastError = errorText;
-            }
+            success = true;
+            console.log('✅ Entrada criada com sucesso!');
+            break;
           } catch (err) {
             console.error(`❌ Erro ao tentar ${url}:`, err.message);
             lastError = err.message;
           }
         }
-
         if (!success) {
           throw new Error(`Back-end não disponível. Erro: ${lastError || 'Verifique se está rodando na porta 4002'}`);
         }

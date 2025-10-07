@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import Layout from '../../components/Layout';
 import { Card, Button, Input, Textarea, LoadingSpinner, Badge } from '../../components/ui';
 import Image from 'next/image';
@@ -61,21 +62,18 @@ export default function PerfilPage() {
 
       for (const url of possibleUrls) {
         try {
-          const response = await fetch(url, {
+          const response = await axios.get(url, {
             headers: {
               'x-api-key': API_KEY,
               'Authorization': `Bearer ${API_KEY}`,
               'Content-Type': 'application/json'
             }
           });
-
-          if (response.ok) {
-            const data = await response.json();
-            entries = Array.isArray(data) ? data : (data.entries || data.data || []);
-            success = true;
-            console.log(`Estatísticas carregadas de ${url}`);
-            break;
-          }
+          const data = response.data;
+          entries = Array.isArray(data) ? data : (data.entries || data.data || []);
+          success = true;
+          console.log(`Estatísticas carregadas de ${url}`);
+          break;
         } catch (err) {
           console.log(`Falhou em ${url}`);
         }

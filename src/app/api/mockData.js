@@ -107,53 +107,7 @@ export const mockData = {
       updated_at: new Date().toISOString()
     };
     mockEntries.push(newEntry);
-    return newEntry;
-  },
-  
-  // Atualizar entrada
-  updateEntry: (id, updateData) => {
-    const index = mockEntries.findIndex(entry => entry.id === parseInt(id));
-    if (index !== -1) {
-      mockEntries[index] = {
-        ...mockEntries[index],
-        ...updateData,
-        updated_at: new Date().toISOString()
-      };
-      return mockEntries[index];
-    }
-    return null;
-  },
-  
-  // Deletar entrada
-  deleteEntry: (id) => {
-    const index = mockEntries.findIndex(entry => entry.id === parseInt(id));
-    if (index !== -1) {
-      const deleted = mockEntries.splice(index, 1)[0];
-      return deleted;
-    }
-    return null;
-  },
-  
-  // Toggle favorito
-  toggleFavorite: (id) => {
-    const entry = mockEntries.find(entry => entry.id === parseInt(id));
-    if (entry) {
-      entry.is_favorite = !entry.is_favorite;
-      entry.updated_at = new Date().toISOString();
-      return entry;
-    }
-    return null;
-  },
-  
-  // Estatísticas
-  getStats: () => {
-    const totalEntries = mockEntries.length;
-    const totalFavorites = mockEntries.filter(entry => entry.is_favorite).length;
-    const totalWords = mockEntries.reduce((total, entry) => {
-      return total + (entry.content ? entry.content.split(' ').length : 0);
-    }, 0);
-    
-    // Calcular sequência atual (mock)
+
     const currentStreak = 7;
     
     // Distribuição de humores
