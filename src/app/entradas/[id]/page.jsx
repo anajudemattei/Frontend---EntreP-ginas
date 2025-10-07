@@ -310,7 +310,7 @@ export default function EntradaPage({ params }) {
                 fontSize: '15px'
               }}
             >
-              ✏️ Editar
+              Editar
             </button>
           </Link>
           
@@ -327,7 +327,7 @@ export default function EntradaPage({ params }) {
               fontSize: '15px'
             }}
           >
-            🗑️ Deletar
+            Deletar
           </button>
           
           <button
@@ -343,7 +343,7 @@ export default function EntradaPage({ params }) {
               fontSize: '15px'
             }}
           >
-            {entry.is_favorite ? '⭐ Remover dos favoritos' : '⭐ Adicionar aos favoritos'}
+            {entry.is_favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           </button>
         </div>
 

@@ -160,7 +160,7 @@ export default function HomePage() {
           {stats && (
             <div className={styles.statsGrid}>
               <Card className={styles.statCard}>
-                <div className={styles.statIcon}>📊</div>
+                <div className={styles.statIcon}>Estatísticas</div>
                 <div className={styles.statValue}>
                   {stats.totalEntries}
                 </div>
@@ -168,7 +168,7 @@ export default function HomePage() {
               </Card>
               
               <Card className={styles.statCard}>
-                <div className={styles.statIcon}>⭐</div>
+                <div className={styles.statIcon}>Favoritos</div>
                 <div className={styles.statValue}>
                   {stats.totalFavorites}
                 </div>
@@ -176,7 +176,7 @@ export default function HomePage() {
               </Card>
               
               <Card className={styles.statCard}>
-                <div className={styles.statIcon}>🔥</div>
+                <div className={styles.statIcon}>Sequência</div>
                 <div className={styles.statValue}>
                   {stats.currentStreak}
                 </div>
@@ -184,7 +184,7 @@ export default function HomePage() {
               </Card>
               
               <Card className={styles.statCard}>
-                <div className={styles.statIcon}>📝</div>
+                <div className={styles.statIcon}>Palavras</div>
                 <div className={styles.statValue}>
                   {stats.totalWords}
                 </div>
@@ -196,12 +196,12 @@ export default function HomePage() {
           <div className={styles.mainGrid}>
             <div className={styles.recentSection}>
               <h2 className={styles.sectionTitle}>
-                📚 Entradas Recentes
+                Entradas Recentes
               </h2>
 
               {recentEntries.length === 0 ? (
                 <Card className={styles.emptyState}>
-                  <div className={styles.emptyIcon}>📖</div>
+                  <div className={styles.emptyIcon}>Vazio</div>
                   <h3 className={styles.emptyTitle}>
                     Seu diário está vazio
                   </h3>
@@ -243,7 +243,7 @@ export default function HomePage() {
                           )}
                           {entry.is_favorite && (
                             <div className={styles.favoriteIcon}>
-                              ⭐
+                              Favorito
                             </div>
                           )}
                         </div>
@@ -265,11 +265,11 @@ export default function HomePage() {
             <div className={styles.sidebar}>
               <Card className={styles.quickActionsCard}>
                 <h3 className={styles.sectionTitle}>
-                  ⚡ Ações Rápidas
+                  Ações Rápidas
                 </h3>
                 <div className={styles.quickActionsGrid}>
                   <Link href="/entradas/nova" className={styles.quickActionButton}>
-                    <div className={styles.quickActionIcon}>✍️</div>
+                    <div className={styles.quickActionIcon}>🆕</div>
                     <span>Nova Entrada</span>
                   </Link>
                   <Link href="/favoritos" className={styles.quickActionButton}>
@@ -277,11 +277,11 @@ export default function HomePage() {
                     <span>Favoritos</span>
                   </Link>
                   <Link href="/relatorios" className={styles.quickActionButton}>
-                    <div className={styles.quickActionIcon}>📊</div>
+                    <div className={styles.quickActionIcon}>📈</div>
                     <span>Relatórios</span>
                   </Link>
                   <Link href="/perfil" className={styles.quickActionButton}>
-                    <div className={styles.quickActionIcon}>👤</div>
+                    <div className={styles.quickActionIcon}>👩🏻</div>
                     <span>Perfil</span>
                   </Link>
                 </div>
@@ -289,7 +289,7 @@ export default function HomePage() {
 
               <Card className={styles.streakCard}>
                 <h3 className={styles.streakTitle}>
-                  🔥 Sequência
+                  Sequência
                 </h3>
                 <div className={styles.streakNumber}>
                   {stats?.currentStreak || 0}
@@ -301,7 +301,7 @@ export default function HomePage() {
 
               <Card className={styles.inspirationCard}>
                 <h3 className={styles.inspirationTitle}>
-                  💡 Inspiração
+                  Inspiração
                 </h3>
                 <p className={styles.inspirationQuote}>
                   "A escrita é a pintura da voz."

@@ -248,7 +248,7 @@ export default function EntradasPage() {
           <Card className={styles.searchCard}>
             <div className={styles.searchContainer}>
               <div className={styles.searchInputWrapper}>
-                <span className={styles.searchIcon}>🔍</span>
+                <span className={styles.searchIcon}>Buscar</span>
                 <Input
                   type="text"
                   placeholder="Pesquisar por título..."
@@ -337,14 +337,14 @@ export default function EntradasPage() {
           </div>
         ) : error ? (
           <Card className={styles.errorCard}>
-            <div className={styles.errorIcon}>❌</div>
+            <div className={styles.errorIcon}>Erro</div>
             <h3 className={styles.errorTitle}>Erro</h3>
             <p className={styles.errorMessage}>{error}</p>
             <Button onClick={loadEntries}>Tentar novamente</Button>
           </Card>
         ) : filteredEntries.length === 0 ? (
           <Card className={styles.emptyCard}>
-            <div className={styles.emptyIcon}>📖</div>
+            <div className={styles.emptyIcon}>Vazio</div>
             <h3 className={styles.emptyTitle}>
               Nenhuma entrada encontrada
             </h3>

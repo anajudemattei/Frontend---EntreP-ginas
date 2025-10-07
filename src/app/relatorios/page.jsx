@@ -101,7 +101,7 @@ export default function RelatoriosPage() {
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className={styles.title}>
-            📊 Relatórios
+            Relatórios
           </h1>
           <p className={styles.subtitle}>
             Gere relatórios em PDF de todas as suas entradas do diário
@@ -112,7 +112,7 @@ export default function RelatoriosPage() {
           <h3 className={styles.previewTitle}>Preview do Relatório</h3>
           <div className={styles.previewContent}>
             <h4 className={styles.previewHeader}>
-              📄 EntrePages - Relatório do Diário
+              EntrePages - Relatório do Diário
             </h4>
             <p className={styles.previewMeta}>
               <strong>Data de geração:</strong> {new Date().toLocaleDateString('pt-BR')}
@@ -120,7 +120,7 @@ export default function RelatoriosPage() {
           </div>
           
           <div className={styles.infoBox}>
-            <h4 className={styles.infoTitle}>ℹ️ O que será incluído no relatório:</h4>
+            <h4 className={styles.infoTitle}>O que será incluído no relatório:</h4>
             <ul className={styles.infoList}>
               <li>• Estatísticas gerais das entradas</li>
               <li>• Distribuição de humores</li>
@@ -151,7 +151,7 @@ export default function RelatoriosPage() {
                 </>
               ) : (
                 <>
-                  <span>📥</span>
+                  <span>Download</span>
                   <span>Baixar PDF</span>
                 </>
               )}
@@ -162,7 +162,7 @@ export default function RelatoriosPage() {
         {error && (
           <Card className={styles.errorCard}>
             <div className={styles.errorContent}>
-              <span className={styles.errorIcon}>❌</span>
+              <span className={styles.errorIcon}>Erro</span>
               <div>
                 <h4 className={styles.errorTitle}>Erro ao gerar relatório</h4>
                 <p className={styles.errorMessage}>{error}</p>
@@ -172,7 +172,7 @@ export default function RelatoriosPage() {
         )}
 
         <Card className={styles.tipsCard}>
-          <h3 className={styles.tipsTitle}>💡 Dicas</h3>
+          <h3 className={styles.tipsTitle}>Dicas</h3>
           <ul className={styles.tipsList}>
             <li>• O relatório inclui todas as suas entradas do diário</li>
             <li>• Estatísticas e distribuição de humores são incluídas automaticamente</li>

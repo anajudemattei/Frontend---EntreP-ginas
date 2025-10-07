@@ -127,14 +127,8 @@ export default function FavoritosPage() {
     <Layout>
       <div className={styles.container}>
         <div className={styles.header}>
-          <div>
-            <h1 className={styles.title}>
-              ⭐ Minhas Entradas Favoritas
-            </h1>
-            <p className={styles.subtitle}>
-              {favorites.length} {favorites.length === 1 ? 'entrada favorita' : 'entradas favoritas'}
-            </p>
-          </div>
+          <h1 className={styles.title}>Entradas Favoritas</h1>
+          <p className={styles.subtitle}>Suas memórias mais especiais</p>
         </div>
 
         {loading ? (

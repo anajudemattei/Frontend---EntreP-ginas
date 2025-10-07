@@ -281,7 +281,7 @@ export default function PerfilPage() {
             <div className={styles.headerInfo}>
               <div>
                 <h1 className={styles.title}>
-                  👤 Meu Perfil
+                  Meu Perfil
                 </h1>
                 <p className={styles.subtitle}>
                   Gerencie suas informações pessoais e configurações
@@ -316,7 +316,7 @@ export default function PerfilPage() {
                     onClick={() => setIsEditing(!isEditing)}
                     disabled={loading}
                   >
-                    {isEditing ? '✖ Cancelar' : '✏️ Editar'}
+                    {isEditing ? ' Cancelar' : ' Editar'}
                   </Button>
                 </div>
 
@@ -509,7 +509,7 @@ export default function PerfilPage() {
               {/* Estatísticas do usuário */}
               <Card className={styles.card}>
                 <h2 className={styles.cardTitle}>
-                  📊 Suas Estatísticas
+                  Estatísticas
                 </h2>
                 {loadingStats ? (
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
@@ -546,7 +546,7 @@ export default function PerfilPage() {
               {/* Conquistas */}
               <Card className={styles.card}>
                 <h2 className={styles.cardTitle}>
-                  🏆 Conquistas
+                  Conquistas
                 </h2>
                 <div className={styles.achievements}>
                   <div className={`${styles.achievementItem} ${stats.currentStreak >= 7 ? styles.achievementActive : styles.achievementInactive}`}>

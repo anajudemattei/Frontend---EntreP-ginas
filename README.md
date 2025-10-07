@@ -2,14 +2,14 @@
 
 Frontend da aplicação Entre Páginas, um diário digital desenvolvido com Next.js, Tailwind CSS e integração com API backend em Node.js.
 
-## 🚀 Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Next.js 15** - Framework React para produção
 - **React 19** - Biblioteca JavaScript para interfaces
 - **Tailwind CSS 4** - Framework CSS utilitário
 - **JavaScript/JSX** - Linguagem de programação
 
-## 🎨 Design e Cores
+## Design e Cores
 
 O projeto utiliza um tema inspirado em diários tradicionais com paleta de cores terrosas:
 
@@ -18,9 +18,9 @@ O projeto utiliza um tema inspirado em diários tradicionais com paleta de cores
 - **Background**: #FDF6F0 (Bege claro)
 - **Texto**: #3C2817 (Marrom escuro)
 
-## 📋 Funcionalidades Implementadas
+## Funcionalidades Implementadas
 
-### ✅ Páginas Principais
+### Páginas Principais
 - **Dashboard/Home** - Estatísticas e entradas recentes
 - **Lista de Entradas** - Visualização de todas as entradas com filtros
 - **Nova Entrada** - Criação de entradas com upload de fotos
@@ -29,7 +29,7 @@ O projeto utiliza um tema inspirado em diários tradicionais com paleta de cores
 - **Favoritos** - Lista de entradas marcadas como favoritas
 - **Relatórios** - Geração e download de relatórios em PDF
 
-### ✅ Funcionalidades
+### Funcionalidades
 - **CRUD Completo** - Criar, ler, atualizar e deletar entradas
 - **Upload de Imagens** - Anexar fotos às entradas
 - **Sistema de Tags** - Organização por tags personalizadas
@@ -39,13 +39,13 @@ O projeto utiliza um tema inspirado em diários tradicionais com paleta de cores
 - **Relatórios PDF** - Exportação com filtros personalizados
 - **Design Responsivo** - Compatível com dispositivos móveis
 
-### ✅ Componentes
+### Componentes
 - **Layout Responsivo** - Header, Footer e navegação
 - **Componentes UI** - Cards, Buttons, Inputs, etc.
 - **Sistema de Cores** - Tema consistente do diário
 - **Animações** - Transições suaves e feedback visual
 
-## 🔧 Configuração e Instalação
+## Configuração e Instalação
 
 1. **Clone o repositório e navegue para a pasta:**
    ```bash
@@ -58,10 +58,10 @@ O projeto utiliza um tema inspirado em diários tradicionais com paleta de cores
    ```
 
 3. **Configure as variáveis de ambiente:**
-   Crie um arquivo `.env.local` na raiz do projeto:
+   Crie um arquivo `.env` na raiz do projeto:
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:3000/api
-   NEXT_PUBLIC_API_KEY=your-api-key-here
+   NEXT_PUBLIC_API_KEY=entre-linhas-2024
    ```
 
 4. **Execute o projeto em desenvolvimento:**
@@ -72,7 +72,7 @@ O projeto utiliza um tema inspirado em diários tradicionais com paleta de cores
 5. **Acesse a aplicação:**
    Abra [http://localhost:3001](http://localhost:3001) no seu navegador
 
-## 🌐 Integração com Backend
+## Integração com Backend
 
 Este frontend se integra com o backend Entre Páginas disponível em:
 **https://github.com/anajudemattei/Backend---EntreP-ginas**
@@ -83,9 +83,9 @@ Certifique-se de que o backend esteja rodando antes de iniciar o frontend. Por p
 - **Backend**: http://localhost:4002
 - **Frontend**: http://localhost:3001
 
-### 📡 Endpoints da API
+### Endpoints da API
 
-#### **1. Listar Entradas**
+#### Listar Entradas
 ```http
 GET /api/diary-entries?API_KEY=entre-linhas-2024
 ```
@@ -120,7 +120,7 @@ curl -X GET "http://localhost:4002/api/diary-entries?API_KEY=entre-linhas-2024&m
 ]
 ```
 
-#### **2. Criar Nova Entrada**
+#### Criar Nova Entrada
 ```http
 POST /api/diary-entries?API_KEY=entre-linhas-2024
 ```
@@ -155,7 +155,7 @@ x-api-key: entre-linhas-2024
 }
 ```
 
-#### **3. Buscar Entrada Específica**
+#### Buscar Entrada Específica
 ```http
 GET /api/diary-entries/:id?API_KEY=entre-linhas-2024
 ```
@@ -175,7 +175,7 @@ GET /api/diary-entries/:id?API_KEY=entre-linhas-2024
 }
 ```
 
-#### **4. Atualizar Entrada**
+#### Atualizar Entrada
 ```http
 PUT /api/diary-entries/:id?API_KEY=entre-linhas-2024
 ```
@@ -202,7 +202,7 @@ PUT /api/diary-entries/:id?API_KEY=entre-linhas-2024
 }
 ```
 
-#### **5. Deletar Entrada**
+#### Deletar Entrada
 ```http
 DELETE /api/diary-entries/:id?API_KEY=entre-linhas-2024
 ```
@@ -215,7 +215,7 @@ DELETE /api/diary-entries/:id?API_KEY=entre-linhas-2024
 }
 ```
 
-#### **6. Marcar/Desmarcar Favorito**
+#### Marcar/Desmarcar Favorito
 ```http
 PATCH /api/diary-entries/:id/favorite?API_KEY=entre-linhas-2024
 ```
@@ -228,7 +228,7 @@ PATCH /api/diary-entries/:id/favorite?API_KEY=entre-linhas-2024
 }
 ```
 
-#### **7. Obter Estatísticas**
+#### Obter Estatísticas
 ```http
 GET /api/diary-entries/stats?API_KEY=entre-linhas-2024
 ```
@@ -249,7 +249,7 @@ GET /api/diary-entries/stats?API_KEY=entre-linhas-2024
 }
 ```
 
-#### **8. Gerar Relatório PDF**
+#### Gerar Relatório PDF
 ```http
 GET /api/report/pdf?API_KEY=entre-linhas-2024&startDate=2025-01-01&endDate=2025-12-31
 ```
@@ -262,7 +262,7 @@ GET /api/report/pdf?API_KEY=entre-linhas-2024&startDate=2025-01-01&endDate=2025-
 
 **Response:** Arquivo PDF com as entradas filtradas
 
-### ⚠️ Tratamento de Erros da API
+### Tratamento de Erros da API
 
 **400 - Bad Request:**
 ```json
@@ -296,7 +296,7 @@ GET /api/report/pdf?API_KEY=entre-linhas-2024&startDate=2025-01-01&endDate=2025-
 }
 ```
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 Frontend---EntreP-ginas/
@@ -353,15 +353,15 @@ Frontend---EntreP-ginas/
 └── README.md              # Documentação
 ```
 
-## 🧪 Testes
+## Testes
 
 Este projeto inclui testes automatizados para garantir a qualidade e funcionamento correto da aplicação.
 
-### 📁 Arquivos de Teste
+### Arquivos de Teste
 
 O projeto possui dois tipos principais de testes na pasta `__tests__/`:
 
-#### **1. Teste Unitário** - `__tests__/components/ui.test.jsx`
+#### Teste Unitário - `__tests__/components/ui.test.jsx`
 Testa os componentes básicos da interface:
 - **Button**: Verifica se o botão renderiza e responde a cliques
 - **Card**: Testa se o card mostra o conteúdo corretamente
@@ -369,7 +369,7 @@ Testa os componentes básicos da interface:
 - **Badge**: Testa a renderização de badges
 - **LoadingSpinner**: Verifica o componente de loading
 
-#### **2. Teste de Integração** - `__tests__/services/api.test.js`
+#### Teste de Integração - `__tests__/services/api.test.js`
 Testa a comunicação com a API:
 - Buscar lista de entradas do diário
 - Criar nova entrada com validação
@@ -378,7 +378,7 @@ Testa a comunicação com a API:
 - Tratamento de erros da API
 - Fallback para dados mock quando necessário
 
-### 🚀 Como Executar os Testes
+### Como Executar os Testes
 
 ```bash
 npm test              # Executar todos os testes
@@ -386,7 +386,7 @@ npm test -- --watch   # Modo watch (observa mudanças)
 npm test -- --coverage # Com cobertura de código
 ```
 
-### ⚙️ Configuração de Testes
+### Configuração de Testes
 
 O projeto está preparado para testes com Jest e React Testing Library. Para adicionar testes:
 
@@ -414,9 +414,9 @@ const customJestConfig = {
 module.exports = createJestConfig(customJestConfig)
 ```
 
-### 📊 O que os Testes Verificam
+### O que os Testes Verificam
 
-#### ✅ Testes Unitários (Componentes UI):
+#### Testes Unitários (Componentes UI):
 - Botões aparecem na tela com o texto correto
 - Cliques nos botões executam as funções esperadas
 - Cards renderizam e mostram o conteúdo adequadamente
@@ -424,7 +424,7 @@ module.exports = createJestConfig(customJestConfig)
 - Labels aparecem corretamente vinculados aos campos
 - Estados de loading são exibidos apropriadamente
 
-#### ✅ Testes de Integração (API Service):
+#### Testes de Integração (API Service):
 - API retorna lista de entradas corretamente
 - Sistema consegue criar novas entradas com sucesso
 - Busca de entradas específicas por ID funciona
@@ -432,9 +432,9 @@ module.exports = createJestConfig(customJestConfig)
 - Sistema usa dados mock quando API está indisponível
 - Erros são tratados e retornados adequadamente
 
-### 📝 Exemplos de Testes
+### Exemplos de Testes
 
-#### **Teste Unitário - Componente Button**
+#### Teste Unitário - Componente Button
 ```javascript
 // __tests__/components/ui/Button.test.jsx
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -460,7 +460,7 @@ describe('Button Component', () => {
 });
 ```
 
-#### **Teste de Integração - API Service**
+#### Teste de Integração - API Service
 ```javascript
 // __tests__/services/api.test.js
 import ApiService from '@/services/api';
@@ -509,7 +509,7 @@ describe('API Service - Diary Entries', () => {
 });
 ```
 
-### 🎯 Resultado Esperado dos Testes
+### Resultado Esperado dos Testes
 
 Quando você executar `npm test`, verá algo assim:
 
@@ -537,7 +537,7 @@ Snapshots:   0 total
 Time:        2.345s
 ```
 
-### 📈 Cobertura de Testes
+### Cobertura de Testes
 
 O projeto deve manter cobertura mínima de:
 - **Componentes UI**: 80%
@@ -545,14 +545,14 @@ O projeto deve manter cobertura mínima de:
 - **Pages críticas**: 60%
 - **Utilitários**: 75%
 
-### 🔧 Tecnologias de Teste
+### Tecnologias de Teste
 
 - **Jest** - Framework de testes JavaScript
 - **React Testing Library** - Biblioteca para testar componentes React
 - **@testing-library/jest-dom** - Matchers customizados para testes de DOM
 - **jest-environment-jsdom** - Ambiente DOM para testes
 
-### 💡 Boas Práticas de Teste
+### Boas Práticas de Teste
 
 1. **Sempre rode os testes antes de fazer commit**
 2. **Escreva testes para novas funcionalidades**
@@ -562,7 +562,7 @@ O projeto deve manter cobertura mínima de:
 6. **Mantenha a cobertura acima dos níveis mínimos**
 7. **Teste casos de sucesso E casos de erro**
 
-### 🐛 Depuração de Testes
+### Depuração de Testes
 
 Se um teste falhar:
 1. Leia a mensagem de erro com atenção
@@ -571,7 +571,7 @@ Se um teste falhar:
 4. Execute apenas o teste que falhou: `npm test -- nome-do-teste`
 5. Verifique se as dependências estão atualizadas
 
-## 🎯 Comandos Disponíveis
+## Comandos Disponíveis
 
 ```bash
 npm run dev      # Executar em desenvolvimento
@@ -580,11 +580,11 @@ npm run start    # Executar versão de produção
 npm run lint     # Verificar código
 ```
 
-## 🔐 Autenticação
+## Autenticação
 
 O frontend utiliza um sistema de API Key configurado no arquivo `.env.local`. Certifique-se de que a chave corresponda à configurada no backend.
 
-## 📱 Responsividade
+## Responsividade
 
 O projeto foi desenvolvido com design responsivo usando Tailwind CSS:
 - **Mobile First** - Design otimizado para dispositivos móveis
@@ -592,7 +592,7 @@ O projeto foi desenvolvido com design responsivo usando Tailwind CSS:
 - **Grid Responsivo** - Layouts adaptativos
 - **Menu Mobile** - Navegação otimizada para touch
 
-## 🎨 Customização
+## Customização
 
 ### Cores
 As cores podem ser personalizadas no arquivo `tailwind.config.js` e `globals.css`.
@@ -603,21 +603,21 @@ Todos os componentes UI estão em `src/components/ui/index.jsx` e podem ser faci
 ### Layout
 O layout principal está em `src/components/Layout.jsx` e inclui Header e Footer.
 
-## 🐛 Tratamento de Erros
+## Tratamento de Erros
 
 - **Loading States** - Spinners durante carregamentos
 - **Error Boundaries** - Tratamento de erros da API
 - **Validação** - Validação de formulários no frontend
 - **Feedback Visual** - Mensagens de sucesso/erro
 
-## 🔄 Estados da Aplicação
+## Estados da Aplicação
 
 - **Loading** - Durante requisições à API
 - **Error** - Quando há falhas de comunicação
 - **Empty** - Quando não há dados para exibir
 - **Success** - Após operações bem-sucedidas
 
-## 🚀 Deploy
+## Deploy
 
 ### Preparando para Produção
 
@@ -646,9 +646,9 @@ NEXT_PUBLIC_API_KEY=sua-api-key-producao
 - **Digital Ocean**
 - **Heroku**
 
-## 📊 Requisitos do Projeto Final
+## Requisitos do Projeto Final
 
-### ✅ Checklist de Entrega
+### Checklist de Entrega
 
 - [x] **Front-end funcional** com Next.js
 - [x] **Back-end funcional** com Node.js ([Repositório](https://github.com/anajudemattei/Backend---EntreP-ginas))
@@ -667,7 +667,7 @@ NEXT_PUBLIC_API_KEY=sua-api-key-producao
   - [x] Exemplos de uso da API
   - [x] Documentação de testes
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Contribuições são bem-vindas! Para contribuir:
 
@@ -677,20 +677,20 @@ Contribuições são bem-vindas! Para contribuir:
 4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
 5. Abra um Pull Request
 
-## 📞 Contato
+## Contato
 
 - **Desenvolvedora**: Ana Julia Pinheiro Demattei
 - **Email**: ana.demattei@aluno.senai.br
 - **GitHub**: [@anajudemattei](https://github.com/anajudemattei)
 - **Instituição**: SENAI Valinhos - Desenvolvimento de Sistemas
 
-## 🎓 Sobre o Projeto
+## Sobre o Projeto
 
 Este projeto foi desenvolvido como Trabalho Final do curso de **Desenvolvimento de Sistemas** no SENAI Valinhos. O objetivo era criar uma aplicação Full Stack completa, integrando front-end e back-end, demonstrando os conhecimentos adquiridos durante o curso.
 
 O **Entre Páginas** é um diário digital que permite aos usuários registrar suas memórias, pensamentos e experiências de forma organizada e visualmente agradável, com funcionalidades como upload de fotos, tags, controle de humor e geração de relatórios.
 
-## 📄 Licença
+## Licença
 
 Este projeto faz parte do trabalho final da disciplina e está disponível para fins educacionais.
 

@@ -12,7 +12,6 @@ export default function SobreMimPage() {
         <div className={styles.header}>
           <div className={styles.headerContent}>
             <h1 className={styles.title}>
-              <span>📖</span>
               Sobre Mim
             </h1>
             <p className={styles.subtitle}>
@@ -57,7 +56,6 @@ export default function SobreMimPage() {
 
           <Card className={styles.projectCard}>
             <h3 className={styles.sectionTitle}>
-              <span>💡</span>
               Sobre Este Projeto
             </h3>
             <div className={styles.projectContent}>
@@ -81,26 +79,25 @@ export default function SobreMimPage() {
           <div className={styles.grid}>
             <Card className={styles.skillsCard}>
               <h3 className={styles.sectionTitle}>
-                <span>🚀</span>
                 Habilidades
               </h3>
               <div className={styles.skillsList}>
                 <div className={styles.skillItem}>
-                  <span className={styles.skillIcon}>⚛️</span>
+                  <span className={styles.skillIcon}>Front-end</span>
                   <div>
                     <h4>Front-end</h4>
                     <p>React, Next.js, HTML, CSS, JavaScript</p>
                   </div>
                 </div>
                 <div className={styles.skillItem}>
-                  <span className={styles.skillIcon}>🔧</span>
+                  <span className={styles.skillIcon}>Back-end</span>
                   <div>
                     <h4>Back-end</h4>
                     <p>Node.js, Express, APIs REST</p>
                   </div>
                 </div>
                 <div className={styles.skillItem}>
-                  <span className={styles.skillIcon}>💾</span>
+                  <span className={styles.skillIcon}>Banco de Dados</span>
                   <div>
                     <h4>Banco de Dados</h4>
                     <p>Postgresql</p>
@@ -111,7 +108,6 @@ export default function SobreMimPage() {
 
             <Card className={styles.interestsCard}>
               <h3 className={styles.sectionTitle}>
-                <span>❤️</span>
                 Interesses
               </h3>
               <div className={styles.interestsList}>
@@ -205,7 +201,6 @@ export default function SobreMimPage() {
 
           <Card className={styles.goalsCard}>
             <h3 className={styles.sectionTitle}>
-              <span>🎯</span>
               Meus Objetivos
             </h3>
             <div className={styles.goalsList}>
@@ -226,7 +221,6 @@ export default function SobreMimPage() {
 
           <Card className={styles.contactCard}>
             <h3 className={styles.sectionTitle}>
-              <span>📬</span>
               Entre em Contato
             </h3>
             <p className={styles.contactText}>
@@ -235,15 +229,15 @@ export default function SobreMimPage() {
             </p>
             <div className={styles.contactLinks}>
               <a href="mailto:ana.demattei@aluno.senai.br" className={styles.contactLink}>
-                <span>✉️</span>
+                <span>Email</span>
                 ana.demattei@aluno.senai.br
               </a>
               <a href="https://github.com/anajudemattei" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>
-                <span>💻</span>
+                <span>GitHub</span>
                 GitHub
               </a>
               <a href="https://linkedin.com/in/anajudemattei" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>
-                <span>💼</span>
+                <span>LinkedIn</span>
                 LinkedIn
               </a>
             </div>
